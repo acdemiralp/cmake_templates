@@ -2,7 +2,6 @@ Configuring this template into an actual project:
 - Required steps:
   - Rename folder include/PROJECT_NAME_HERE/ to your project name.
   - In CMakeLists.txt          : Change PROJECT_NAME_HERE to your project name.
-  - In CMakeLists.txt          : Change add_library to add_executable when building an executable.
   - In cmake/sources.cmake     : Add your source files to the list.
   - In cmake/dependencies.cmake: Add your third party libraries via the import_library function.
 - Optional steps:
