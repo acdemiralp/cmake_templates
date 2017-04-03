@@ -22,20 +22,6 @@ set(PROJECT_SOURCES
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})
 
-##################################################  Dependencies  ##################################################
-include(import_library)
-# ADD LIBRARIES HERE.
-# Examples:
-# - Header Only:
-#   find_package  (GLM REQUIRED)
-#   import_library(glm GLM_INCLUDE_DIRS)
-# - Identical Debug and Release:
-#   find_package  (OpenGL REQUIRED)
-#   import_library(opengl OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-# - Separate Debug and Release:
-#   find_package  (Boost REQUIRED iostreams)
-#   import_library(iostreams Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
-
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE 
@@ -50,6 +36,20 @@ target_include_directories(${PROJECT_NAME}_
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
 set_target_properties(${PROJECT_NAME}_ PROPERTIES LINKER_LANGUAGE CXX)
+
+##################################################  Dependencies  ##################################################
+include(import_library)
+# ADD LIBRARIES HERE.
+# Examples:
+# - Header Only:
+#   find_package  (GLM REQUIRED)
+#   import_library(glm GLM_INCLUDE_DIRS)
+# - Identical Debug and Release:
+#   find_package  (OpenGL REQUIRED)
+#   import_library(opengl OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
+# - Separate Debug and Release:
+#   find_package  (Boost REQUIRED iostreams)
+#   import_library(iostreams Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
 
 ##################################################    Testing     ##################################################
 enable_testing()
