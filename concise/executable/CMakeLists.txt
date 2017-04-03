@@ -1,7 +1,6 @@
-# Concise library / executable cmake template. Configuring this template into an actual project:
+# Concise executable cmake template. Configuring this template into an actual project:
 # - Change PROJECT_NAME_HERE to your project name.
 # - Add your source files to the sources list.
-# - Change add_library to add_executable if building an executable.
 # - Add your third party libraries via the import_library function.
 # - Add your test source files to the test sources list (optional).
 # - Rename folder include/PROJECT_NAME_HERE/ to your project name.
@@ -15,7 +14,6 @@ set                   (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 ##################################################    Options     ##################################################
-option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
 
 ##################################################    Sources     ##################################################
@@ -24,14 +22,11 @@ set(PROJECT_SOURCES
   cmake/assign_source_group.cmake
   cmake/import_library.cmake
   
+  source/main.cpp
   # ADD HEADERS AND SOURCES HERE.
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})
-
-set         (EXPORT_HEADER "${PROJECT_BINARY_DIR}/export.hpp")
-list        (APPEND PROJECT_SOURCES ${EXPORT_HEADER})
-source_group("include\\${PROJECT_NAME}" FILES ${EXPORT_HEADER})
 
 ##################################################  Dependencies  ##################################################
 include(import_library)
@@ -48,7 +43,7 @@ include(import_library)
 #   import_library(iostreams Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
 
 ##################################################    Targets     ##################################################
-add_library(${PROJECT_NAME} ${PROJECT_SOURCES}) # CHANGE TO ADD_EXECUTABLE IF BUILDING AN EXECUTABLE.
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -60,15 +55,6 @@ if(NOT BUILD_SHARED_LIBS)
   string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME_UPPER}_STATIC)
 endif()
-
-##################################################    Postbuild   ##################################################
-include               (GenerateExportHeader)
-string                (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-generate_export_header(${PROJECT_NAME} 
-  EXPORT_FILE_NAME     export.hpp
-  EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
-  STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
-)
 
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
@@ -95,6 +81,5 @@ install(TARGETS ${PROJECT_NAME} EXPORT "${PROJECT_NAME}-config"
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
-install(FILES   "${PROJECT_BINARY_DIR}/export.hpp" DESTINATION "include/${PROJECT_NAME}")
-install(EXPORT  "${PROJECT_NAME}-config"           DESTINATION "cmake")
-export (TARGETS "${PROJECT_NAME}"                  FILE        "${PROJECT_NAME}-config.cmake")
+install(EXPORT  "${PROJECT_NAME}-config" DESTINATION "cmake")
+export (TARGETS "${PROJECT_NAME}"        FILE        "${PROJECT_NAME}-config.cmake")
