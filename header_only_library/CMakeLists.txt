@@ -31,13 +31,13 @@ include(import_library)
 # Examples:
 # - Header Only:
 #   find_package  (GLM REQUIRED)
-#   import_library(glm GLM_INCLUDE_DIRS)
+#   import_library(GLM_INCLUDE_DIRS)
 # - Identical Debug and Release:
 #   find_package  (OpenGL REQUIRED)
-#   import_library(opengl OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
+#   import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
 # - Separate Debug and Release:
 #   find_package  (Boost REQUIRED iostreams)
-#   import_library(iostreams Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
+#   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
@@ -45,7 +45,8 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
+target_link_libraries     (${PROJECT_NAME} INTERFACE ${PROJECT_LIBRARIES})
 
 # Hack for header-only project to appear in the IDEs.
 add_library(${PROJECT_NAME}_ STATIC ${PROJECT_SOURCES})
