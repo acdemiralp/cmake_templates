@@ -63,9 +63,10 @@ endif()
 
 ##################################################    Postbuild   ##################################################
 include               (GenerateExportHeader)
+string                (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string                (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 generate_export_header(${PROJECT_NAME} 
-  EXPORT_FILE_NAME     export.hpp
+  EXPORT_FILE_NAME     ${PROJECT_NAME_LOWER}_export.hpp
   EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
