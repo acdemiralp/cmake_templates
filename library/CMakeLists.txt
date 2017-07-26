@@ -25,12 +25,9 @@ set(PROJECT_SOURCES
   
   # ADD HEADERS AND SOURCES HERE.
 )
+list(APPEND PROJECT_SOURCES "include/${PROJECT_NAME}/export.hpp")
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})
-
-set         (EXPORT_HEADER "${PROJECT_BINARY_DIR}/export.hpp")
-list        (APPEND PROJECT_SOURCES ${EXPORT_HEADER})
-source_group("include\\${PROJECT_NAME}" FILES ${EXPORT_HEADER})
 
 ##################################################  Dependencies  ##################################################
 include(import_library)
@@ -63,10 +60,9 @@ endif()
 
 ##################################################    Postbuild   ##################################################
 include               (GenerateExportHeader)
-string                (TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 string                (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 generate_export_header(${PROJECT_NAME} 
-  EXPORT_FILE_NAME     ${PROJECT_NAME_LOWER}_export.hpp
+  EXPORT_FILE_NAME     ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/export.hpp
   EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
@@ -96,6 +92,5 @@ install(TARGETS ${PROJECT_NAME} EXPORT "${PROJECT_NAME}-config"
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
-install(FILES   "${PROJECT_BINARY_DIR}/export.hpp" DESTINATION "include/${PROJECT_NAME}")
-install(EXPORT  "${PROJECT_NAME}-config"           DESTINATION "cmake")
-export (TARGETS "${PROJECT_NAME}"                  FILE        "${PROJECT_NAME}-config.cmake")
+install(EXPORT  "${PROJECT_NAME}-config" DESTINATION "cmake")
+export (TARGETS "${PROJECT_NAME}"        FILE        "${PROJECT_NAME}-config.cmake")
