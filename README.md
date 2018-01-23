@@ -26,9 +26,7 @@ set(PROJECT_SOURCES
 )
 ```
 - Add your third party libraries via the import_library function which creates a cmake library target for the given 
-include directories and libraries. Note that the first argument of the import_library function is used to 
-name the created target and may be anything. You may also choose to manually add your libraries to the 
-PROJECT_LIBRARIES list.
+include directories and libraries. You may also choose to manually add your libraries to the PROJECT_LIBRARIES list.
 ```cmake
 #################################################  Dependencies  #################################################
 include(import_library)
