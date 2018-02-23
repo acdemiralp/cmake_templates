@@ -66,12 +66,20 @@ if(BUILD_TESTS)
   )
 
   foreach(_SOURCE ${PROJECT_TEST_SOURCES})
-    get_filename_component(_NAME ${_SOURCE} NAME_WE)
-    set                   (_SOURCES tests/catch.hpp tests/main.cpp ${_SOURCE})
-    add_executable        (${_NAME} ${_SOURCES})
-    add_test              (${_NAME} ${_NAME})
-    set_property          (TARGET ${_NAME} PROPERTY FOLDER "Tests")
-    source_group          ("source" FILES ${_SOURCES})
+    get_filename_component    (_NAME ${_SOURCE} NAME_WE)
+    set                       (_SOURCES tests/catch.hpp tests/main.cpp ${_SOURCE})
+    add_executable            (${_NAME} ${_SOURCES})
+    target_include_directories(${_NAME} PUBLIC 
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/external>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+      $<INSTALL_INTERFACE:include> 
+      $<INSTALL_INTERFACE:include/external> PRIVATE source)
+    target_include_directories(${_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
+    target_link_libraries     (${_NAME} PUBLIC ${PROJECT_LIBRARIES})
+    add_test                  (${_NAME} ${_NAME})
+    set_property              (TARGET ${_NAME} PROPERTY FOLDER "Tests")
+    source_group              ("source" FILES ${_SOURCES})
   endforeach()
 endif()
 
