@@ -12,9 +12,9 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
 ```
-- Add your third party libraries via the import_library function which creates a cmake library target for the given 
-include directories and libraries. You may also set the `PROJECT_INCLUDE_DIRS` and `PROJECT_LIBRARIES` variables 
-manually instead of using import_library.
+- Add your third party libraries via the `import_library` function which creates a cmake library target for the 
+given include directories and libraries. You may also set the `PROJECT_INCLUDE_DIRS` and `PROJECT_LIBRARIES` 
+variables manually instead of using import_library.
 ```cmake
 ...
 #################################################  Dependencies  #################################################
@@ -45,7 +45,7 @@ list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
 ```
 - Open conanfile.py, change `PROJECT_NAME_HERE` as well as `PROJECT_URL_HERE` (if available) and add your 
-third party libraries to the requires.
+third party libraries to the `requires`.
 ```python
 ...
 class Project(ConanFile):
