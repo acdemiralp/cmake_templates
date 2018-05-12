@@ -1,33 +1,23 @@
 # cmake_templates
-A set of cmake templates for creating a C++ library or executable.
+Concise CMake templates for creating C++ libraries and executables.
 
-Instructions to configure into an actual project (also available in respective CMakeLists.txts):
+## Configuring the normal templates
 - Copy the chosen project template somewhere.
 - Rename the folder include/PROJECT_NAME_HERE/.
-- Open up CMakeLists.txt.
+- Open CMakeLists.txt.
 - Change PROJECT_NAME_HERE to your project name.
 ```cmake
 #################################################    Project     #################################################
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-```
-- Add your source files to the PROJECT_SOURCES list.
-```cmake
-#################################################    Sources     #################################################
-set(PROJECT_SOURCES
-  CMakeLists.txt
-  cmake/assign_source_group.cmake
-  cmake/import_library.cmake
-  
-  # ADD HEADERS AND SOURCES HERE. EXAMPLES:
-  include/example_project/example_header.hpp
-  source/example_source.cpp
-)
+...
 ```
 - Add your third party libraries via the import_library function which creates a cmake library target for the given 
-include directories and libraries. You may also choose to manually add your libraries to the PROJECT_LIBRARIES list.
+include directories and libraries. You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES manually instead 
+of using import_library.
 ```cmake
+...
 #################################################  Dependencies  #################################################
 include(import_library)
 
@@ -41,16 +31,32 @@ import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
 # Separate Debug and Release:
 find_package  (Boost REQUIRED iostreams)
 import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
+...
 ```
-- Add your test files to the PROJECT_TEST_SOURCES list (optional).
+
+## Configuring the conan templates
+- Copy the chosen project template somewhere.
+- Rename the folder include/PROJECT_NAME_HERE/.
+- Open CMakeLists.txt.
+- Change PROJECT_NAME_HERE to your project name.
 ```cmake
-#################################################    Testing     #################################################
-if(BUILD_TESTS)
-  enable_testing()
-  set(PROJECT_TEST_SOURCES
-    # ADD TESTS HERE. EXAMPLES:
-    tests/example_test.cpp
-  )
-endif()
+#################################################    Project     #################################################
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
+list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+...
 ```
-- Extend as you like.
+- Open conanfile.py.
+- Change PROJECT_NAME_HERE to your project name and PROJECT_URL_HERE to your project url (if available). 
+- Add your third party libraries to the requires.
+```python
+class Project(ConanFile):
+    name            = "PROJECT_NAME_HERE"
+    description     = "Conan package for PROJECT_NAME_HERE."
+    version         = "1.0.0"                
+    url             = "PROJECT_URL_HERE"
+    settings        = "arch", "build_type", "compiler", "os"
+    generators      = "cmake"
+    requires        = (("catch2/2.2.0@bincrafters/stable")) 
+    ...
+```
