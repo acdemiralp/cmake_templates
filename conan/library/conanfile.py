@@ -13,6 +13,10 @@ class Project(ConanFile):
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
 
+    def imports(self):
+       self.copy("*.dylib*", dst="", src="lib")
+       self.copy("*.dll"   , dst="", src="bin")
+
     def source(self):
         zip_name = "v%s.zip" % self.version
         download ("%s/archive/%s" % (self.url, zip_name), zip_name, verify=False)
@@ -27,13 +31,13 @@ class Project(ConanFile):
 
     def package(self):
         include_folder = "%s-%s/include" % (self.name, self.version)
-        self.copy("*.h"  , dst="include", src=include_folder)
-        self.copy("*.hpp", dst="include", src=include_folder)
-        self.copy("*.inl", dst="include", src=include_folder)
-        self.copy("*.a"  , dst="lib", keep_path=False)
-        self.copy("*.so" , dst="lib", keep_path=False)
-        self.copy("*.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
+        self.copy("*.h"     , dst="include", src=include_folder)
+        self.copy("*.hpp"   , dst="include", src=include_folder)
+        self.copy("*.inl"   , dst="include", src=include_folder)
+        self.copy("*.dylib*", dst="lib"    , keep_path=False   )
+        self.copy("*.lib"   , dst="lib"    , keep_path=False   )
+        self.copy("*.so*"   , dst="lib"    , keep_path=False   )
+        self.copy("*.dll"   , dst="bin"    , keep_path=False   )
 
     def package_info(self):
         self.cpp_info.libs = [self.name]

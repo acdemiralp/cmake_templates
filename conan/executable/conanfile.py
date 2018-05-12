@@ -11,6 +11,10 @@ class Project(ConanFile):
     generators      = "cmake"
     requires        = (("catch2/2.2.0@bincrafters/stable"))
 
+    def imports(self):
+       self.copy("*.dylib*", dst="", src="lib")
+       self.copy("*.dll"   , dst="", src="bin")
+
     def source(self):
         zip_name = "v%s.zip" % self.version
         download ("%s/archive/%s" % (self.url, zip_name), zip_name, verify=False)
