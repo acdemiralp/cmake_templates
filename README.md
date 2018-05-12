@@ -1,5 +1,5 @@
 # cmake_templates
-Concise CMake templates for creating C++ libraries and executables.
+Concise cmake templates for creating C++ libraries and executables.
 
 ## Creating a normal cmake project
 - Copy the chosen project template somewhere.
