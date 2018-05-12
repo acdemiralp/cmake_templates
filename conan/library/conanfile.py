@@ -43,4 +43,4 @@ class Project(ConanFile):
         self.cpp_info.libs = [self.name]
         if self.settings.os == "Windows":
             if not self.options.shared:
-                self.cpp_info.defines.append("PROJECT_NAME_HERE_STATIC")
+                self.cpp_info.defines.append("%s_STATIC" % self.name.upper())
