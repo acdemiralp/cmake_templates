@@ -44,8 +44,8 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
 ```
-- Open conanfile.py and change PROJECT_NAME_HERE as well as PROJECT_URL_HERE if available. 
-- Add your third party libraries to the requires.
+- Open conanfile.py and change PROJECT_NAME_HERE as well as PROJECT_URL_HERE if available. Add your third party 
+libraries to the requires.
 ```python
 ...
 class Project(ConanFile):
