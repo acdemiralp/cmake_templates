@@ -1,11 +1,10 @@
 # cmake_templates
 Concise CMake templates for creating C++ libraries and executables.
 
-## Configuring the normal templates
+## Creating a normal cmake project
 - Copy the chosen project template somewhere.
 - Rename the folder include/PROJECT_NAME_HERE/.
-- Open CMakeLists.txt.
-- Change PROJECT_NAME_HERE to your project name.
+- Open CMakeLists.txt and change PROJECT_NAME_HERE.
 ```cmake
 #################################################    Project     #################################################
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
@@ -34,11 +33,10 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 ...
 ```
 
-## Configuring the conan templates
+## Creating a conan cmake project
 - Copy the chosen project template somewhere.
 - Rename the folder include/PROJECT_NAME_HERE/.
-- Open CMakeLists.txt.
-- Change PROJECT_NAME_HERE to your project name.
+- Open CMakeLists.txt and change PROJECT_NAME_HERE.
 ```cmake
 #################################################    Project     #################################################
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
@@ -46,10 +44,10 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
 ```
-- Open conanfile.py.
-- Change PROJECT_NAME_HERE to your project name and PROJECT_URL_HERE to your project url (if available). 
+- Open conanfile.py and change PROJECT_NAME_HERE as well as PROJECT_URL_HERE if available. 
 - Add your third party libraries to the requires.
 ```python
+...
 class Project(ConanFile):
     name            = "PROJECT_NAME_HERE"
     description     = "Conan package for PROJECT_NAME_HERE."
