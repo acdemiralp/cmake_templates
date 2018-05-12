@@ -36,7 +36,7 @@ include(import_library)
 # - Separate Debug and Release:
 #   find_package  (Boost REQUIRED iostreams)
 #   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
-# - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES manually instead of using import_library.
+# - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES instead of using import_library.
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
