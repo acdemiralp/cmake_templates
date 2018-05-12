@@ -24,7 +24,13 @@ include            (assign_source_group)
 assign_source_group(${PROJECT_FILES})
 
 ##################################################  Dependencies  ##################################################
+include(conan)
+include(conan_utility)
 include(import_library)
+
+add_conan_remote(bincrafter      https://api.bintray.com/conan/bincrafters/public-conan)
+add_conan_remote(conan-community https://api.bintray.com/conan/conan-community/conan   )
+
 # ADD LIBRARIES HERE.
 # Examples:
 # - Header Only:
@@ -37,6 +43,9 @@ include(import_library)
 #   find_package  (Boost REQUIRED iostreams)
 #   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
 # - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES manually instead of using import_library.
+
+conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
+list           (APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG} optimized ${CONAN_LIBS_RELEASE})
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
