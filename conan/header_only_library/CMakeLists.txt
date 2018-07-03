@@ -45,13 +45,14 @@ add_conan_remote(conan-community https://api.bintray.com/conan/conan-community/c
 # - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES instead of using import_library.
 
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
-list  (APPEND PROJECT_INCLUDE_DIRS ${CONAN_INCLUDE_DIRS_RELEASE})
-if    (CONAN_LIBS_DEBUG)
-  list(APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG})
-endif ()  
-if    (CONAN_LIBS_RELEASE)
-  list(APPEND PROJECT_LIBRARIES optimized ${CONAN_LIBS_RELEASE})
-endif ()
+list           (APPEND PROJECT_INCLUDE_DIRS ${CONAN_INCLUDE_DIRS_RELEASE})
+list           (APPEND PROJECT_COMPILE_DEFINITIONS ${CONAN_COMPILE_DEFINITIONS_RELEASE})
+foreach        (_LIB ${CONAN_LIBS_DEBUG})
+  list         (APPEND PROJECT_LIBRARIES debug ${_LIB})
+endforeach     ()  
+foreach        (_LIB ${CONAN_LIBS_RELEASE})
+  list         (APPEND PROJECT_LIBRARIES optimized ${_LIB})
+endforeach     ()
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
