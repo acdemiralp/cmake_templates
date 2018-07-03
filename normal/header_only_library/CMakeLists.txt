@@ -46,6 +46,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:include>)
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} INTERFACE ${PROJECT_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_DEFINITIONS})
 
 # Hack for header-only project to appear in the IDEs.
 add_library(${PROJECT_NAME}_ STATIC ${PROJECT_FILES})
@@ -54,6 +55,7 @@ target_include_directories(${PROJECT_NAME}_ PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR})     
 target_include_directories(${PROJECT_NAME}_ PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME}_ PROPERTIES LINKER_LANGUAGE CXX)
 
 ##################################################    Testing     ##################################################

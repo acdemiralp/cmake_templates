@@ -45,13 +45,14 @@ add_conan_remote(conan-community https://api.bintray.com/conan/conan-community/c
 # - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES instead of using import_library.
 
 conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP BUILD missing)
-list  (APPEND PROJECT_INCLUDE_DIRS ${CONAN_INCLUDE_DIRS_RELEASE})
-if    (CONAN_LIBS_DEBUG)
-  list(APPEND PROJECT_LIBRARIES debug ${CONAN_LIBS_DEBUG})
-endif ()  
-if    (CONAN_LIBS_RELEASE)
-  list(APPEND PROJECT_LIBRARIES optimized ${CONAN_LIBS_RELEASE})
-endif ()
+list           (APPEND PROJECT_INCLUDE_DIRS ${CONAN_INCLUDE_DIRS_RELEASE})
+list           (APPEND PROJECT_COMPILE_DEFINITIONS ${CONAN_COMPILE_DEFINITIONS_RELEASE})
+foreach        (_LIB ${CONAN_LIBS_DEBUG})
+  list         (APPEND PROJECT_LIBRARIES debug ${_LIB})
+endforeach     ()  
+foreach        (_LIB ${CONAN_LIBS_RELEASE})
+  list         (APPEND PROJECT_LIBRARIES optimized ${_LIB})
+endforeach     ()
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
@@ -61,6 +62,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:include>)
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} INTERFACE ${PROJECT_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_DEFINITIONS})
 
 # Hack for header-only project to appear in the IDEs.
 add_library(${PROJECT_NAME}_ STATIC ${PROJECT_FILES})
@@ -69,6 +71,7 @@ target_include_directories(${PROJECT_NAME}_ PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR})     
 target_include_directories(${PROJECT_NAME}_ PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME}_ PROPERTIES LINKER_LANGUAGE CXX)
 
 ##################################################    Testing     ##################################################
