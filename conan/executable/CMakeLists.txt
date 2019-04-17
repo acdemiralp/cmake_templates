@@ -83,12 +83,18 @@ if(BUILD_TESTS)
 
   file(GLOB PROJECT_TEST_CPPS tests/*.cpp)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
-    get_filename_component(_NAME ${_SOURCE} NAME_WE)
-    add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
-    target_link_libraries (${_NAME} ${PROJECT_NAME})
-    add_test              (${_NAME} ${_NAME})
-    set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
-    assign_source_group   (${_SOURCE})
+    get_filename_component    (_NAME ${_SOURCE} NAME_WE)
+    add_executable            (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
+    target_include_directories(${_NAME} PUBLIC 
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+      $<INSTALL_INTERFACE:include> PRIVATE source)
+    target_include_directories(${_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
+    target_link_libraries     (${_NAME} PUBLIC ${PROJECT_LIBRARIES})
+    target_compile_definitions(${_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+    add_test                  (${_NAME} ${_NAME})
+    set_property              (TARGET ${_NAME} PROPERTY FOLDER tests)
+    assign_source_group       (${_SOURCE})
   endforeach()
 endif()
 
