@@ -18,7 +18,7 @@ class Project(ConanFile):
        self.copy("*.dll"   , dst="", src="bin")
 
     def source(self):
-        zip_name = "v%s.zip" % self.version
+        zip_name = "%s.zip" % self.version
         download ("%s/archive/%s" % (self.url, zip_name), zip_name, verify=False)
         unzip    (zip_name)
         os.unlink(zip_name)
