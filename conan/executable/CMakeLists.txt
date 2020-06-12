@@ -75,10 +75,10 @@ endif()
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
   enable_testing     ()
-  set                (TEST_MAIN_NAME catch_main)
-  set                (TEST_MAIN_SOURCES tests/catch/main.cpp)
+  set                (TEST_MAIN_NAME test_main)
+  set                (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library        (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests/catch)
+  set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   assign_source_group(${TEST_MAIN_SOURCES})
 
   file(GLOB PROJECT_TEST_CPPS tests/*.cpp)
