@@ -9,7 +9,7 @@ class Project(ConanFile):
     url             = "PROJECT_URL_HERE"
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
-    requires        = (("catch2/2.2.0@bincrafters/stable")) 
+    requires        = (("doctest/2.3.4@bincrafters/stable")) 
     options         = {"shared": [True, False]} 
     default_options = "shared=True"
 
