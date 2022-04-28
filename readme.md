@@ -7,7 +7,7 @@ Concise cmake templates for creating C++ libraries and executables.
 - Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
 ```cmake
 #################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
@@ -39,7 +39,7 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 - Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
 ```cmake
 #################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
@@ -55,7 +55,7 @@ class Project(ConanFile):
     url             = "PROJECT_URL_HERE"
     settings        = "arch", "build_type", "compiler", "os"
     generators      = "cmake"
-    requires        = (("catch2/2.2.0@bincrafters/stable")) 
+    requires        = (("doctest/2.3.4@bincrafters/stable")) 
     ...
 ```
 
@@ -65,7 +65,7 @@ class Project(ConanFile):
 - Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
 ```cmake
 #################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
@@ -94,12 +94,12 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 ```batch
 ...
 rem Add your library ports here.
-%VCPKG_COMMAND% catch2
+%VCPKG_COMMAND% doctest
 ...
 ```
 ```shell
 ...
 # Add your library ports here. 
-$VCPKG_COMMAND catch2
+$VCPKG_COMMAND doctest
 ...
 ```

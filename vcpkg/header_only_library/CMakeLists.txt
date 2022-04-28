@@ -4,9 +4,13 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 set                   (CMAKE_CXX_STANDARD 17)
+set                   (CMAKE_BUILD_TYPE Release)
 
-include               (set_max_warning_level)
-set_max_warning_level ()
+if   (MSVC)
+  add_compile_options (/W4)
+else ()
+  add_compile_options (-Wall -Wextra -pedantic)
+endif()
 
 ##################################################    Options     ##################################################
 option(BUILD_TESTS "Build tests." OFF)
@@ -26,8 +30,10 @@ assign_source_group(${PROJECT_FILES})
 ##################################################  Dependencies  ##################################################
 include(import_library)
 
-find_package(doctest CONFIG REQUIRED)
-list        (APPEND PROJECT_LIBRARIES doctest::doctest)
+if   (BUILD_TESTS)
+  find_package(doctest CONFIG REQUIRED)
+  list        (APPEND PROJECT_LIBRARIES doctest::doctest)
+endif()
 
 # ADD LIBRARIES HERE. Vcpkg toolchain file will automatically locate them.
 # Examples:

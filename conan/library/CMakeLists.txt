@@ -4,11 +4,15 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 set                   (CMAKE_CXX_STANDARD 17)
+set                   (CMAKE_BUILD_TYPE Release)
 set                   (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-include               (set_max_warning_level)
-set_max_warning_level ()
+if   (MSVC)
+  add_compile_options (/W4)
+else ()
+  add_compile_options (-Wall -Wextra -pedantic)
+endif()
 
 ##################################################    Options     ##################################################
 option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
