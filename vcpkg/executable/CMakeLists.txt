@@ -13,10 +13,10 @@ else ()
 endif()
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
-file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp)
+file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
+file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
-file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
+file(GLOB_RECURSE PROJECT_MISC *.bat *.gitignore *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
   ${PROJECT_SOURCES} 
@@ -51,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)

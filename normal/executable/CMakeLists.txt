@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
-set                   (CMAKE_CXX_STANDARD 17)
 set                   (CMAKE_BUILD_TYPE Release)
+set                   (CMAKE_CXX_STANDARD 17)
 
 if   (MSVC)
   add_compile_options (/W4)
@@ -13,10 +13,10 @@ else ()
 endif()
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
-file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp)
+file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
+file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
-file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
+file(GLOB_RECURSE PROJECT_MISC *.bat *.gitignore *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
   ${PROJECT_SOURCES} 
@@ -51,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)
