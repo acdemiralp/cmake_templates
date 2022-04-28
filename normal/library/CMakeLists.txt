@@ -1,24 +1,28 @@
 ##################################################    Project     ##################################################
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
+set                   (CMAKE_BUILD_TYPE Release)
 set                   (CMAKE_CXX_STANDARD 17)
 set                   (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-include               (set_max_warning_level)
-set_max_warning_level ()
+if   (MSVC)
+  add_compile_options (/W4)
+else ()
+  add_compile_options (-Wall -Wextra -pedantic)
+endif()
 
 ##################################################    Options     ##################################################
 option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
-file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp)
+file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
+file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
-file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
+file(GLOB_RECURSE PROJECT_MISC *.bat *.gitignore *.md *.py *.sh *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
@@ -55,6 +59,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)
@@ -80,11 +85,11 @@ if(BUILD_TESTS)
   set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   assign_source_group(${TEST_MAIN_SOURCES})
 
-  file(GLOB PROJECT_TEST_CPPS tests/*.cpp)
+  file(GLOB PROJECT_TEST_CPPS tests/*.c tests/*.cpp tests/*.cu)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
-    target_link_libraries (${_NAME} ${PROJECT_NAME})
+    target_link_libraries (${_NAME} ${PROJECT_NAME} ${PROJECT_LIBRARIES})
     add_test              (${_NAME} ${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})
