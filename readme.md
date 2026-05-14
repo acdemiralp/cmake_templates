@@ -100,8 +100,15 @@ cmake --build --preset release
   without pushing those warning flags onto third-party dependencies or downstream consumers.
 - Unity builds and IPO/LTO are available as OFF-by-default options (`ENABLE_UNITY_BUILD` and `ENABLE_IPO`) for users
   who want faster builds or whole-program optimization without turning those choices into hard-coded defaults.
+- The library templates now generate `Config.cmake`, `ConfigVersion.cmake`, and namespaced target exports so installed
+  packages can be consumed with `find_package(YourProject CONFIG)` and `target_link_libraries(... YourProject::YourProject)`.
 - `CPack` is CMake's packaging tool for producing archives or installers. It is still intentionally left out of these
   starter templates, since packaging needs vary much more from project to project than the basic configure/build flow.
+
+## Further reading
+- [Professional CMake: A Practical Guide](https://crascit.com/professional-cmake/)
+- [An Introduction to Modern CMake](https://cliutils.gitlab.io/modern-cmake/)
+- [CMake Best Practices](https://www.oreilly.com/library/view/cmake-best-practices/9781804611554/)
 
 ## License
 This project is licensed under the [MIT License](license.md).

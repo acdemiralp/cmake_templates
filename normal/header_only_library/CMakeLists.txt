@@ -19,7 +19,7 @@ endif()
 
 ##################################################    Sources     ##################################################
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake cmake/*.in)
 file(GLOB PROJECT_MISC *.bat *.gitignore *.json *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
@@ -81,6 +81,21 @@ set_target_properties     (${PROJECT_NAME}_ PROPERTIES
   LINKER_LANGUAGE CXX
   UNITY_BUILD ${ENABLE_UNITY_BUILD})
 
+##################################################   Packaging    ##################################################
+include(CMakePackageConfigHelpers)
+
+set(PROJECT_CONFIG_INSTALL_DIR "lib/cmake/${PROJECT_NAME}")
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  INSTALL_DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}")
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
   enable_testing     ()
@@ -109,7 +124,17 @@ if(BUILD_TESTS)
 endif()
 
 ##################################################  Installation  ##################################################
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-config)
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-config
+  INCLUDES DESTINATION include)
 install(DIRECTORY include/ DESTINATION include)
-install(EXPORT  ${PROJECT_NAME}-config DESTINATION cmake)
-export (TARGETS ${PROJECT_NAME}        FILE        ${PROJECT_NAME}-config.cmake)
+install(EXPORT ${PROJECT_NAME}-config
+  DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}"
+  FILE "${PROJECT_NAME}Targets.cmake"
+  NAMESPACE "${PROJECT_NAME}::")
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}")
+export(EXPORT ${PROJECT_NAME}-config
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+  NAMESPACE "${PROJECT_NAME}::")
