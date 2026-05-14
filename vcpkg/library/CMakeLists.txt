@@ -3,15 +3,17 @@ cmake_minimum_required(VERSION 3.28...4.2 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
-set                   (CMAKE_BUILD_TYPE Release)
-set                   (CMAKE_CXX_STANDARD 17)
-set                   (CMAKE_CXX_VISIBILITY_PRESET hidden)
-set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-if   (MSVC)
-  add_compile_options (/W4)
-else ()
-  add_compile_options (-Wall -Wextra -pedantic)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  set         (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the build type.")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+endif()
+
+set(PROJECT_WARNING_OPTIONS)
+if  (MSVC)
+  list(APPEND PROJECT_WARNING_OPTIONS /W4)
+else()
+  list(APPEND PROJECT_WARNING_OPTIONS -Wall -Wextra -pedantic)
 endif()
 
 ##################################################    Options     ##################################################
@@ -44,19 +46,20 @@ endif()
 
 # ADD LIBRARIES HERE. Vcpkg toolchain file will automatically locate them.
 # Examples:
-# - Header Only:
-#   find_package  (GLM REQUIRED)
-#   import_library(GLM_INCLUDE_DIRS)
-# - Identical Debug and Release:
+# - Prefer imported targets when available:
+#   find_package(GLM REQUIRED)
+#   list(APPEND PROJECT_LIBRARIES GLM::GLM)
+# - Use import_library as a fallback for packages without imported targets:
 #   find_package  (OpenGL REQUIRED)
 #   import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-# - Separate Debug and Release:
+# - Or for separate debug and release libraries:
 #   find_package  (Boost REQUIRED iostreams)
 #   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
-# - You may also set the PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES instead of using import_library.
+# - You may also set PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES directly.
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_FILES})
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -64,12 +67,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+target_compile_options    (${PROJECT_NAME} PRIVATE ${PROJECT_WARNING_OPTIONS})
 target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
-set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties     (${PROJECT_NAME} PROPERTIES
+  CXX_EXTENSIONS            OFF
+  CXX_VISIBILITY_PRESET     hidden
+  LINKER_LANGUAGE           CXX
+  VISIBILITY_INLINES_HIDDEN 1)
 
 if(NOT BUILD_SHARED_LIBS)
   string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-  set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME_UPPER}_STATIC)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_NAME_UPPER}_STATIC)
 endif()
 
 ##################################################    Postbuild   ##################################################
@@ -88,6 +96,7 @@ if(BUILD_TESTS)
   set                  (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
   target_link_libraries(${TEST_MAIN_NAME} ${PROJECT_NAME})
+  target_compile_options(${TEST_MAIN_NAME} PRIVATE ${PROJECT_WARNING_OPTIONS})
   set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   assign_source_group  (${TEST_MAIN_SOURCES})
 
@@ -96,6 +105,7 @@ if(BUILD_TESTS)
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
     target_link_libraries (${_NAME} ${PROJECT_NAME} ${PROJECT_LIBRARIES})
+    target_compile_options(${_NAME} PRIVATE ${PROJECT_WARNING_OPTIONS})
     add_test              (${_NAME} ${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})

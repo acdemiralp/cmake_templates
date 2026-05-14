@@ -1,4 +1,4 @@
-# Imports a library which is not built with cmake.
+# Imports a library which is not built with cmake or does not export imported targets.
 # The include directories are appended to the PROJECT_INCLUDE_DIRS variable.
 # The libraries           are appended to the PROJECT_LIBRARIES    variable.
 # Usage:
