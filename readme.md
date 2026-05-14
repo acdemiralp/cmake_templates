@@ -33,32 +33,6 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 ...
 ```
 
-## Creating a conan cmake project
-- Copy the chosen project template somewhere.
-- Rename the folder include/PROJECT_NAME_HERE/.
-- Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
-```cmake
-#################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
-project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-...
-```
-- Open conanfile.py, change `PROJECT_NAME_HERE` as well as `PROJECT_URL_HERE` (if available) and add your 
-third party libraries to the `requires`.
-```python
-...
-class Project(ConanFile):
-    name            = "PROJECT_NAME_HERE"
-    description     = "Conan package for PROJECT_NAME_HERE."
-    version         = "1.0.0"                
-    url             = "PROJECT_URL_HERE"
-    settings        = "arch", "build_type", "compiler", "os"
-    generators      = "cmake"
-    requires        = (("doctest/2.3.4@bincrafters/stable")) 
-    ...
-```
-
 ## Creating a vcpkg cmake project
 - Copy the chosen project template somewhere.
 - Rename the folder include/PROJECT_NAME_HERE/.
@@ -103,3 +77,6 @@ rem Add your library ports here.
 $VCPKG_COMMAND doctest
 ...
 ```
+
+## License
+This project is licensed under the [MIT License](license.md).
