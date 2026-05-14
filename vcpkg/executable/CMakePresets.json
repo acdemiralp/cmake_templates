@@ -7,6 +7,15 @@
   },
   "configurePresets": [
     {
+      "name": "default",
+      "displayName": "Default",
+      "binaryDir": "${sourceDir}/build/default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
       "name": "release",
       "displayName": "Release",
       "binaryDir": "${sourceDir}/build/release",
@@ -26,6 +35,11 @@
     }
   ],
   "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "configuration": "Release"
+    },
     {
       "name": "release",
       "configurePreset": "release",

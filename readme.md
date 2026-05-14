@@ -87,15 +87,15 @@ $VCPKG_COMMAND doctest
 ```
 - Configure and build with the shipped presets.
 ```shell
-cmake --preset release
-cmake --build --preset release
+cmake --preset default
+cmake --build --preset default
 ```
 
 ## Notes on the template defaults
 - The templates keep `file(GLOB ...)` on purpose: for a starter project, easy file discovery is usually more helpful
   than manually maintaining source lists from day one.
-- Every template now ships with a `CMakePresets.json` containing `debug` and `release` presets. That keeps the default
-  configuration out of `CMakeLists.txt` and gives IDEs and the CLI the same entry points.
+- Every template now ships with a `CMakePresets.json` containing `default`, `debug`, and `release` presets. That keeps
+  the default configuration out of `CMakeLists.txt` and gives IDEs and the CLI the same entry points.
 - The templates use a small `INTERFACE` warning target so the project and its tests get the default warning set
   without pushing those warning flags onto third-party dependencies or downstream consumers.
 - Unity builds and IPO/LTO are available as OFF-by-default options (`ENABLE_UNITY_BUILD` and `ENABLE_IPO`) for users
