@@ -1,7 +1,7 @@
 ##################################################    Project     ##################################################
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 set                   (CMAKE_BUILD_TYPE Release)
 set                   (CMAKE_CXX_STANDARD 17)
@@ -23,7 +23,7 @@ file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
 file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.bat *.gitignore *.md *.py *.sh *.txt)
-set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
+set (PROJECT_EXPORT_HPP "include/${PROJECT_NAME}/export.hpp")
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
   ${PROJECT_SOURCES} 
@@ -76,7 +76,7 @@ endif()
 include               (GenerateExportHeader)
 string                (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 generate_export_header(${PROJECT_NAME} 
-  EXPORT_FILE_NAME     ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/export.hpp
+  EXPORT_FILE_NAME     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/export.hpp"
   EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
@@ -109,4 +109,4 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-config
   RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
 install(EXPORT  ${PROJECT_NAME}-config DESTINATION cmake)
-export (TARGETS ${PROJECT_NAME}        FILE        ${PROJECT_NAME}-config.cmake)
+export (TARGETS ${PROJECT_NAME}        FILE        "${PROJECT_NAME}-config.cmake")
