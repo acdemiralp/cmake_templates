@@ -11,6 +11,6 @@ VCPKG_DEFAULT_TRIPLET=x64-linux
 ./vcpkg install --recurse doctest
 cd ..
 
-cmake -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake ..
-cmake --build . --clean-first --target all --config Release --parallel 8
 cd ..
+cmake --preset release
+cmake --build --preset release --parallel 8

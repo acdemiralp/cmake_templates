@@ -4,25 +4,23 @@ project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-  set         (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the build type.")
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
-endif()
-
-set(PROJECT_WARNING_OPTIONS)
-if  (MSVC)
-  list(APPEND PROJECT_WARNING_OPTIONS /W4)
-else()
-  list(APPEND PROJECT_WARNING_OPTIONS -Wall -Wextra -pedantic)
-endif()
-
 ##################################################    Options     ##################################################
 option(BUILD_TESTS "Build tests." OFF)
+option(ENABLE_IPO "Enable interprocedural optimization." OFF)
+option(ENABLE_UNITY_BUILD "Enable unity builds." OFF)
+
+if(ENABLE_IPO)
+  include            (CheckIPOSupported)
+  check_ipo_supported(RESULT PROJECT_IPO_SUPPORTED OUTPUT PROJECT_IPO_ERROR)
+  if(NOT PROJECT_IPO_SUPPORTED)
+    message(FATAL_ERROR "IPO is not supported: ${PROJECT_IPO_ERROR}")
+  endif()
+endif()
 
 ##################################################    Sources     ##################################################
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
-file(GLOB_RECURSE PROJECT_MISC *.bat *.gitignore *.md *.py *.sh *.txt)
+file(GLOB PROJECT_MISC *.bat *.gitignore *.json *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
   ${PROJECT_CMAKE_UTILS} 
@@ -52,6 +50,13 @@ endif()
 #   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
 # - You may also set PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES directly.
 
+add_library(${PROJECT_NAME}_project_warnings INTERFACE)
+if  (MSVC)
+  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE /W4)
+else()
+  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE -Wall -Wextra -pedantic)
+endif()
+
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
 target_compile_features   (${PROJECT_NAME} INTERFACE cxx_std_17)
@@ -72,12 +77,14 @@ target_include_directories(${PROJECT_NAME}_ PUBLIC
   "${CMAKE_CURRENT_BINARY_DIR}")
 target_include_directories(${PROJECT_NAME}_ PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
+target_link_libraries     (${PROJECT_NAME}_ PRIVATE ${PROJECT_NAME}_project_warnings)
 target_compile_definitions(${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
-target_compile_options    (${PROJECT_NAME}_ PRIVATE ${PROJECT_WARNING_OPTIONS})
 target_compile_options    (${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_OPTIONS})
 set_target_properties     (${PROJECT_NAME}_ PROPERTIES
   CXX_EXTENSIONS OFF
-  LINKER_LANGUAGE CXX)
+  INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
+  LINKER_LANGUAGE CXX
+  UNITY_BUILD ${ENABLE_UNITY_BUILD})
 
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
@@ -85,17 +92,20 @@ if(BUILD_TESTS)
   set                  (TEST_MAIN_NAME test_main)
   set                  (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  target_link_libraries(${TEST_MAIN_NAME} ${PROJECT_NAME})
-  target_compile_options(${TEST_MAIN_NAME} PRIVATE ${PROJECT_WARNING_OPTIONS})
+  target_link_libraries(${TEST_MAIN_NAME} PRIVATE ${PROJECT_NAME} ${PROJECT_NAME}_project_warnings)
   set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
+  set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)
   assign_source_group  (${TEST_MAIN_SOURCES})
 
   file(GLOB PROJECT_TEST_CPPS tests/*.c tests/*.cpp tests/*.cu)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
-    target_link_libraries (${_NAME} ${PROJECT_NAME} ${PROJECT_LIBRARIES})
-    target_compile_options(${_NAME} PRIVATE ${PROJECT_WARNING_OPTIONS})
+    target_link_libraries (${_NAME} PRIVATE ${PROJECT_NAME} ${PROJECT_LIBRARIES} ${PROJECT_NAME}_project_warnings)
+    set_target_properties (${_NAME} PROPERTIES
+      CXX_EXTENSIONS OFF
+      INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
+      UNITY_BUILD ${ENABLE_UNITY_BUILD})
     add_test              (${_NAME} ${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})

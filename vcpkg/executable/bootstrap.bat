@@ -11,6 +11,6 @@ rem Add your library ports here.
 vcpkg install --recurse 
 cd ..
 
-cmake -Ax64 -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake ..
-cmake --build . --clean-first --target ALL_BUILD --config Release --parallel 8
 cd ..
+cmake --preset release
+cmake --build --preset release --parallel 8

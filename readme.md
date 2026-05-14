@@ -85,20 +85,23 @@ rem Add your library ports here.
 $VCPKG_COMMAND doctest
 ...
 ```
+- Configure and build with the shipped presets.
+```shell
+cmake --preset release
+cmake --build --preset release
+```
 
 ## Notes on the template defaults
 - The templates keep `file(GLOB ...)` on purpose: for a starter project, easy file discovery is usually more helpful
   than manually maintaining source lists from day one.
-- `CMAKE_BUILD_TYPE` now defaults to `Release` only on single-config generators when the user did not choose a build
-  type. Multi-config generators such as Visual Studio still use their normal configuration selection flow.
-- The templates set C++ standard requirements and warning flags per target, so the project and its tests get the
-  defaults without pushing those warning flags onto third-party dependencies or downstream consumers.
-- `CMakePresets.json` is CMake's shared JSON format for configure/build/test presets used by IDEs and the CLI. It is
-  useful once a concrete project has stable workflows, but these starter templates keep that out of the box to stay
-  lightweight and language-only.
-- `CPack` is CMake's packaging tool for producing archives or installers. Unity builds merge translation units to
-  reduce build overhead, and IPO/LTO enables whole-program optimization. Those are valuable project-level choices, but
-  they are intentionally left for the generated project to opt into when it has real packaging or performance needs.
+- Every template now ships with a `CMakePresets.json` containing `debug` and `release` presets. That keeps the default
+  configuration out of `CMakeLists.txt` and gives IDEs and the CLI the same entry points.
+- The templates use a small `INTERFACE` warning target so the project and its tests get the default warning set
+  without pushing those warning flags onto third-party dependencies or downstream consumers.
+- Unity builds and IPO/LTO are available as OFF-by-default options (`ENABLE_UNITY_BUILD` and `ENABLE_IPO`) for users
+  who want faster builds or whole-program optimization without turning those choices into hard-coded defaults.
+- `CPack` is CMake's packaging tool for producing archives or installers. It is still intentionally left out of these
+  starter templates, since packaging needs vary much more from project to project than the basic configure/build flow.
 
 ## License
 This project is licensed under the [MIT License](license.md).
