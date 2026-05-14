@@ -1,7 +1,7 @@
 ##################################################    Project     ##################################################
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 set                   (CMAKE_BUILD_TYPE Release)
 set                   (CMAKE_CXX_STANDARD 17)
@@ -57,8 +57,8 @@ target_compile_options    (${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_OPTIONS})
 # Hack for header-only project to appear in the IDEs.
 add_library(${PROJECT_NAME}_ STATIC ${PROJECT_FILES})
 target_include_directories(${PROJECT_NAME}_ PUBLIC 
-  ${CMAKE_CURRENT_SOURCE_DIR}/include 
-  ${CMAKE_CURRENT_BINARY_DIR})     
+  "${CMAKE_CURRENT_SOURCE_DIR}/include" 
+  "${CMAKE_CURRENT_BINARY_DIR}")     
 target_include_directories(${PROJECT_NAME}_ PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME}_ PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
