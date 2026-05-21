@@ -1,5 +1,5 @@
 ##################################################    Project     ##################################################
-cmake_minimum_required(VERSION 3.28...4.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
@@ -59,7 +59,7 @@ endif()
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} ${PROJECT_FILES})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 target_include_directories(${PROJECT_NAME} PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -112,7 +112,7 @@ if(BUILD_TESTS)
   set                (TEST_MAIN_NAME test_main)
   set                (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library        (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  target_compile_features(${TEST_MAIN_NAME} PRIVATE cxx_std_17)
+  target_compile_features(${TEST_MAIN_NAME} PRIVATE cxx_std_20)
   target_link_libraries  (${TEST_MAIN_NAME} PRIVATE ${PROJECT_NAME}_project_warnings)
   set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)

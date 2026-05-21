@@ -7,7 +7,7 @@ Concise cmake templates for creating C++ libraries and executables.
 - Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
 ```cmake
 #################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.28...4.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
@@ -43,7 +43,7 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 - Open CMakeLists.txt and change `PROJECT_NAME_HERE`.
 ```cmake
 #################################################    Project     #################################################
-cmake_minimum_required(VERSION 3.28...4.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ...
@@ -96,12 +96,15 @@ cmake --build --preset default
   than manually maintaining source lists from day one.
 - Every template now ships with a `CMakePresets.json` containing `default`, `debug`, and `release` presets. That keeps
   the default configuration out of `CMakeLists.txt` and gives IDEs and the CLI the same entry points.
+- Library and header-only-library presets also include `testPresets` so tests can be run with `ctest --preset default`
+  after enabling `BUILD_TESTS`.
 - The templates use a small `INTERFACE` warning target so the project and its tests get the default warning set
   without pushing those warning flags onto third-party dependencies or downstream consumers.
 - Unity builds and IPO/LTO are available as OFF-by-default options (`ENABLE_UNITY_BUILD` and `ENABLE_IPO`) for users
   who want faster builds or whole-program optimization without turning those choices into hard-coded defaults.
 - The library templates now generate `Config.cmake`, `ConfigVersion.cmake`, and namespaced target exports so installed
   packages can be consumed with `find_package(YourProject CONFIG)` and `target_link_libraries(... YourProject::YourProject)`.
+- The templates default to C++20, which has full compiler support across GCC 10+, Clang 13+, and MSVC 19.29+.
 - `CPack` is CMake's packaging tool for producing archives or installers. It is still intentionally left out of these
   starter templates, since packaging needs vary much more from project to project than the basic configure/build flow.
 

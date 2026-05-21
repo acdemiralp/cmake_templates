@@ -1,5 +1,5 @@
 ##################################################    Project     ##################################################
-cmake_minimum_required(VERSION 3.28...4.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
@@ -59,7 +59,7 @@ endif()
 
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
-target_compile_features   (${PROJECT_NAME} INTERFACE cxx_std_17)
+target_compile_features   (${PROJECT_NAME} INTERFACE cxx_std_20)
 target_include_directories(${PROJECT_NAME} INTERFACE 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -71,7 +71,7 @@ target_compile_options    (${PROJECT_NAME} INTERFACE ${PROJECT_COMPILE_OPTIONS})
 
 # Hack for header-only project to appear in the IDEs.
 add_library(${PROJECT_NAME}_ STATIC ${PROJECT_FILES})
-target_compile_features   (${PROJECT_NAME}_ PUBLIC cxx_std_17)
+target_compile_features   (${PROJECT_NAME}_ PUBLIC cxx_std_20)
 target_include_directories(${PROJECT_NAME}_ PUBLIC 
   "${CMAKE_CURRENT_SOURCE_DIR}/include" 
   "${CMAKE_CURRENT_BINARY_DIR}")
