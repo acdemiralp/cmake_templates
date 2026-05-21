@@ -9,7 +9,7 @@ Concise cmake templates for creating C++ libraries and executables.
 #################################################    Project     #################################################
 cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 ...
 ```
 - Prefer imported targets when the package already provides them.
@@ -45,7 +45,7 @@ import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_
 #################################################    Project     #################################################
 cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 ...
 ```
 - Prefer imported targets when the package already provides them.

@@ -12,5 +12,5 @@ vcpkg install --recurse doctest
 cd ..
 
 cd ..
-cmake --preset release
-cmake --build --preset release --parallel 8
+cmake --preset default
+cmake --build --preset default --parallel 8

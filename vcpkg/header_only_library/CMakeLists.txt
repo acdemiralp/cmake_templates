@@ -122,7 +122,7 @@ if(BUILD_TESTS)
       CXX_EXTENSIONS OFF
       INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
       UNITY_BUILD ${ENABLE_UNITY_BUILD})
-    add_test              (${_NAME} ${_NAME})
+    add_test              (NAME ${_NAME} COMMAND ${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})
   endforeach()
