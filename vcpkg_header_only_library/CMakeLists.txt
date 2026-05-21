@@ -8,6 +8,7 @@ set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 option(BUILD_TESTS "Build tests." OFF)
 option(ENABLE_IPO "Enable interprocedural optimization." OFF)
 option(ENABLE_UNITY_BUILD "Enable unity builds." OFF)
+option(ENABLE_CPACK "Enable package generation with CPack." OFF)
 
 if(ENABLE_IPO)
   include            (CheckIPOSupported)
@@ -122,7 +123,7 @@ if(BUILD_TESTS)
       CXX_EXTENSIONS OFF
       INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
       UNITY_BUILD ${ENABLE_UNITY_BUILD})
-    add_test              (NAME ${_NAME} COMMAND ${_NAME})
+    doctest_discover_tests(${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})
   endforeach()
@@ -143,3 +144,12 @@ install(FILES
 export(EXPORT ${PROJECT_NAME}-config
   FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
   NAMESPACE "${PROJECT_NAME}::")
+
+##################################################     CPack      ##################################################
+if(ENABLE_CPACK)
+  set(CPACK_PACKAGE_NAME              ${PROJECT_NAME})
+  set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
+  set(CPACK_PACKAGE_VENDOR            "")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+  include(CPack)
+endif()

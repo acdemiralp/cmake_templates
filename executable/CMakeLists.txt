@@ -7,6 +7,7 @@ set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 ##################################################    Options     ##################################################
 option(ENABLE_IPO "Enable interprocedural optimization." OFF)
 option(ENABLE_UNITY_BUILD "Enable unity builds." OFF)
+option(ENABLE_CPACK "Enable package generation with CPack." OFF)
 
 if(ENABLE_IPO)
   include            (CheckIPOSupported)
@@ -19,7 +20,7 @@ endif()
 ##################################################    Sources     ##################################################
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
 file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake cmake/*.in)
 file(GLOB PROJECT_MISC *.bat *.gitignore *.json *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
@@ -55,7 +56,7 @@ endif()
 
 ##################################################    Targets     ##################################################
 add_executable(${PROJECT_NAME} ${PROJECT_FILES})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 target_include_directories(${PROJECT_NAME} PUBLIC 
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -74,3 +75,12 @@ set_target_properties     (${PROJECT_NAME} PROPERTIES
 ##################################################  Installation  ##################################################
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
+
+##################################################     CPack      ##################################################
+if(ENABLE_CPACK)
+  set(CPACK_PACKAGE_NAME              ${PROJECT_NAME})
+  set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
+  set(CPACK_PACKAGE_VENDOR            "")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+  include(CPack)
+endif()

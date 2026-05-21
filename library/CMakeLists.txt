@@ -9,6 +9,7 @@ option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
 option(ENABLE_IPO "Enable interprocedural optimization." OFF)
 option(ENABLE_UNITY_BUILD "Enable unity builds." OFF)
+option(ENABLE_CPACK "Enable package generation with CPack." OFF)
 
 if(ENABLE_IPO)
   include            (CheckIPOSupported)
@@ -109,10 +110,12 @@ write_basic_package_version_file(
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
   enable_testing     ()
+  include            (doctest)
   set                (TEST_MAIN_NAME test_main)
   set                (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library        (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
   target_compile_features(${TEST_MAIN_NAME} PRIVATE cxx_std_20)
+  target_include_directories(${TEST_MAIN_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
   target_link_libraries  (${TEST_MAIN_NAME} PRIVATE ${PROJECT_NAME}_project_warnings)
   set_property       (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)
@@ -122,12 +125,13 @@ if(BUILD_TESTS)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
+    target_include_directories(${_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
     target_link_libraries (${_NAME} PRIVATE ${PROJECT_NAME} ${PROJECT_LIBRARIES} ${PROJECT_NAME}_project_warnings)
     set_target_properties (${_NAME} PROPERTIES
       CXX_EXTENSIONS OFF
       INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
       UNITY_BUILD ${ENABLE_UNITY_BUILD})
-    add_test              (NAME ${_NAME} COMMAND ${_NAME})
+    doctest_discover_tests(${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
     assign_source_group   (${_SOURCE})
   endforeach()
@@ -151,3 +155,12 @@ install(FILES
 export(EXPORT ${PROJECT_NAME}-config
   FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
   NAMESPACE "${PROJECT_NAME}::")
+
+##################################################     CPack      ##################################################
+if(ENABLE_CPACK)
+  set(CPACK_PACKAGE_NAME              ${PROJECT_NAME})
+  set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
+  set(CPACK_PACKAGE_VENDOR            "")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+  include(CPack)
+endif()
