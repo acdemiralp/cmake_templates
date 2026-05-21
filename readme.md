@@ -40,19 +40,24 @@ cmake --build --preset default
 ```
 
 ### vcpkg project
-Same as above, then additionally:
-- Open `bootstrap.bat` / `bootstrap.sh` and add your vcpkg ports.
-```batch
-vcpkg install --recurse your_port_here
+Same as the normal project setup, plus:
+- Open `vcpkg.json` and set the `name` field (lowercase, hyphens only) and list your dependencies.
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "dependencies": [
+    "boost-filesystem",
+    "glm"
+  ]
+}
 ```
-```shell
-./vcpkg install --recurse your_port_here
-```
-- Run the bootstrap script to clone vcpkg, install dependencies, and build.
+- Run the bootstrap script. It clones vcpkg, installs the packages declared in `vcpkg.json`, then configures and builds.
 ```shell
 ./bootstrap.sh   # Linux / macOS
 bootstrap.bat    # Windows
 ```
+vcpkg reads `vcpkg.json` automatically (manifest mode). No port names in the script.
 
 ## Notes
 
@@ -64,6 +69,7 @@ bootstrap.bat    # Windows
 - Library templates generate `Config.cmake`, `ConfigVersion.cmake`, and namespaced target exports. Installed packages are consumable via `find_package(YourProject CONFIG)` and `target_link_libraries(... YourProject::YourProject)`.
 - `ENABLE_CPACK` (OFF by default) activates CPack. Fill in `CPACK_PACKAGE_VENDOR` and `CPACK_PACKAGE_DESCRIPTION_SUMMARY`, then run `cpack` after building to produce archives or installers.
 - Tests use [doctest](https://github.com/doctest/doctest). Normal templates vendor `doctest.h`; vcpkg templates acquire it via `find_package(doctest CONFIG REQUIRED)`. `doctest_discover_tests()` registers each `TEST_CASE` as a separate CTest test entry.
+- vcpkg templates use [manifest mode](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode): dependencies are declared in `vcpkg.json` and installed automatically when `vcpkg install` is run. The `name` field must be lowercase with hyphens. Add a `builtin-baseline` (a vcpkg commit hash) for reproducible dependency versions.
 - The templates default to C++20 (full compiler support: GCC 10+, Clang 13+, MSVC 19.29+).
 
 ## Further reading

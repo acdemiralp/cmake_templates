@@ -7,8 +7,8 @@ cd vcpkg
 if [ ! -f "vcpkg" ] ; then ./bootstrap-vcpkg.sh ; fi
 
 VCPKG_DEFAULT_TRIPLET=x64-linux
-# Add your library ports here. 
-./vcpkg install --recurse doctest
+# Add your library ports to vcpkg.json, then install all declared dependencies:
+./vcpkg install
 cd ..
 
 cd ..

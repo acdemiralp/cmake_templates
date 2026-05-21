@@ -7,8 +7,8 @@ cd vcpkg
 if not exist "vcpkg.exe" call bootstrap-vcpkg.bat
 
 set VCPKG_DEFAULT_TRIPLET=x64-windows
-rem Add your library ports here.
-vcpkg install --recurse doctest 
+rem Add your library ports to vcpkg.json, then install all declared dependencies:
+vcpkg install
 cd ..
 
 cd ..
