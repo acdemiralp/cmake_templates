@@ -20,10 +20,10 @@ if(ENABLE_IPO)
 endif()
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
-file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake cmake/*.in)
-file(GLOB PROJECT_MISC *.bat *.gitignore *.json *.md *.py *.sh *.txt)
+file(GLOB_RECURSE PROJECT_HEADERS CONFIGURE_DEPENDS include/*.h include/*.hpp include/*.ipp)
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS source/*.c source/*.cpp source/*.cu)
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS cmake/*.cmake cmake/*.in)
+file(GLOB PROJECT_MISC CONFIGURE_DEPENDS *.bat *.gitignore *.json *.md *.py *.sh *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
@@ -121,7 +121,7 @@ if(BUILD_TESTS)
   set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)
   assign_source_group(${TEST_MAIN_SOURCES})
 
-  file(GLOB PROJECT_TEST_CPPS tests/*.c tests/*.cpp tests/*.cu)
+  file(GLOB PROJECT_TEST_CPPS CONFIGURE_DEPENDS tests/*.c tests/*.cpp tests/*.cu)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)

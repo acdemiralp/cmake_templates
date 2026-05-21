@@ -61,7 +61,7 @@ vcpkg reads `vcpkg.json` automatically (manifest mode). No port names in the scr
 
 ## Notes
 
-- `file(GLOB ...)` is kept intentionally. For a starter project, automatic file discovery is more useful than maintaining source lists manually.
+- `file(GLOB ... CONFIGURE_DEPENDS ...)` is used throughout. CMake re-runs configure when files are added or removed. Explicit source lists are still more robust for large teams, but for a starter project GLOB is more practical.
 - Every template ships a `CMakePresets.json` with `default`, `debug`, and `release` configure/build presets.
 - Library and header-only-library presets also include `testPresets`. After setting `BUILD_TESTS=ON`, run tests with `ctest --preset default`.
 - An `INTERFACE` warning target applies `-Wall -Wextra -pedantic` (GCC/Clang) or `/W4` (MSVC) to the project and its tests without propagating those flags to downstream consumers.

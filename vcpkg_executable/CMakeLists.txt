@@ -18,10 +18,10 @@ if(ENABLE_IPO)
 endif()
 
 ##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
-file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake cmake/*.in)
-file(GLOB PROJECT_MISC *.bat *.gitignore *.json *.md *.py *.sh *.txt)
+file(GLOB_RECURSE PROJECT_HEADERS CONFIGURE_DEPENDS include/*.h include/*.hpp include/*.ipp)
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS source/*.c source/*.cpp source/*.cu)
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS cmake/*.cmake cmake/*.in)
+file(GLOB PROJECT_MISC CONFIGURE_DEPENDS *.bat *.gitignore *.json *.md *.py *.sh *.txt)
 set (PROJECT_FILES 
   ${PROJECT_HEADERS} 
   ${PROJECT_SOURCES} 
@@ -57,15 +57,15 @@ endif()
 ##################################################    Targets     ##################################################
 add_executable(${PROJECT_NAME} ${PROJECT_FILES})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-target_include_directories(${PROJECT_NAME} PUBLIC 
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  $<INSTALL_INTERFACE:include> PRIVATE source)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
-target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  source)
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
+target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_LIBRARIES})
 target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_project_warnings)
-target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
-target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
+target_compile_options    (${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES
   CXX_EXTENSIONS OFF
   INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
