@@ -71,11 +71,6 @@ set_target_properties     (${PROJECT_NAME} PROPERTIES
   LINKER_LANGUAGE CXX
   UNITY_BUILD ${ENABLE_UNITY_BUILD})
 
-if(NOT BUILD_SHARED_LIBS)
-  string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_NAME_UPPER}_STATIC)
-endif()
-
 ##################################################  Installation  ##################################################
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
