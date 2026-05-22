@@ -3,10 +3,10 @@
 # Based on https://github.com/doctest/doctest (MIT License).
 
 function(doctest_discover_tests TARGET)
-  cmake_parse_arguments(PARSE_ARGV 1 "" "" "WORKING_DIRECTORY;TEST_PREFIX;TEST_SUFFIX" "PROPERTIES;EXTRA_ARGS")
+  cmake_parse_arguments(PARSE_ARGV 1 "_" "" "WORKING_DIRECTORY;TEST_PREFIX;TEST_SUFFIX" "PROPERTIES;EXTRA_ARGS")
 
-  if(NOT _WORKING_DIRECTORY)
-    set(_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET}>")
+  if(NOT __WORKING_DIRECTORY)
+    set(__WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET}>")
   endif()
 
   set(_ctest_file "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_tests.cmake")
@@ -18,11 +18,11 @@ function(doctest_discover_tests TARGET)
     BYPRODUCTS "${_ctest_file}"
     COMMAND "${CMAKE_COMMAND}"
       "-DTEST_EXECUTABLE=$<TARGET_FILE:${TARGET}>"
-      "-DTEST_WORKING_DIR=${_WORKING_DIRECTORY}"
-      "-DTEST_PREFIX=${_TEST_PREFIX}"
-      "-DTEST_SUFFIX=${_TEST_SUFFIX}"
-      "-DTEST_PROPERTIES=${_PROPERTIES}"
-      "-DTEST_EXTRA_ARGS=${_EXTRA_ARGS}"
+      "-DTEST_WORKING_DIR=${__WORKING_DIRECTORY}"
+      "-DTEST_PREFIX=${__TEST_PREFIX}"
+      "-DTEST_SUFFIX=${__TEST_SUFFIX}"
+      "-DTEST_PROPERTIES=${__PROPERTIES}"
+      "-DTEST_EXTRA_ARGS=${__EXTRA_ARGS}"
       "-DCTEST_FILE=${_ctest_file}"
       -P "${_script}"
     VERBATIM
