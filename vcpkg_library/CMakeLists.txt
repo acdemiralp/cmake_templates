@@ -40,7 +40,6 @@ include(import_library)
 
 if   (BUILD_TESTS)
   find_package(doctest CONFIG REQUIRED)
-  list        (APPEND PROJECT_LIBRARIES doctest::doctest)
 endif()
 
 # ADD LIBRARIES HERE. Vcpkg toolchain file will automatically locate them.
@@ -119,6 +118,7 @@ if(BUILD_TESTS)
   set                  (TEST_MAIN_SOURCES tests/internal/main.cpp)
   add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
   target_compile_features(${TEST_MAIN_NAME} PRIVATE cxx_std_20)
+  target_include_directories(${TEST_MAIN_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
   target_link_libraries(${TEST_MAIN_NAME} PRIVATE doctest::doctest ${PROJECT_NAME}_project_warnings)
   set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
   set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)
@@ -128,7 +128,8 @@ if(BUILD_TESTS)
   foreach(_SOURCE ${PROJECT_TEST_CPPS})
     get_filename_component(_NAME ${_SOURCE} NAME_WE)
     add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
-    target_link_libraries (${_NAME} PRIVATE ${PROJECT_NAME} ${PROJECT_LIBRARIES} ${PROJECT_NAME}_project_warnings)
+    target_include_directories(${_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
+    target_link_libraries (${_NAME} PRIVATE ${PROJECT_NAME} doctest::doctest ${PROJECT_LIBRARIES} ${PROJECT_NAME}_project_warnings)
     set_target_properties (${_NAME} PROPERTIES
       CXX_EXTENSIONS OFF
       INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}

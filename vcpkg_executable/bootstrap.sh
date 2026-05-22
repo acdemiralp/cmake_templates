@@ -9,8 +9,10 @@ if [ ! -f "vcpkg" ] ; then ./bootstrap-vcpkg.sh ; fi
 export VCPKG_DEFAULT_TRIPLET=x64-linux
 # Add your library ports to vcpkg.json, then install all declared dependencies:
 ./vcpkg install
-cd ..
 
-cd ..
-cmake --preset default
-cmake --build --preset default --parallel 8
+# Use vcpkg's own bundled cmake — no system cmake required.
+CMAKE=$(./vcpkg fetch cmake 2>/dev/null | tail -1)
+cd ../..
+
+"$CMAKE" --preset default
+"$CMAKE" --build --preset default --parallel
