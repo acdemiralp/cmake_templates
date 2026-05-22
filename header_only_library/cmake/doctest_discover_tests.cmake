@@ -30,6 +30,7 @@ foreach(_line ${_lines})
     "add_test(\n"
     "  NAME \"${TEST_PREFIX}${_name}${TEST_SUFFIX}\"\n"
     "  COMMAND \"${TEST_EXECUTABLE}\" \"--test-case=${_name}\" ${TEST_EXTRA_ARGS}\n"
+    "  WORKING_DIRECTORY \"${TEST_WORKING_DIR}\"\n"
     ")\n"
   )
   if(TEST_PROPERTIES)
