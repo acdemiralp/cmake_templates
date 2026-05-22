@@ -46,13 +46,13 @@ Same as the normal project setup, plus:
 {
   "name": "my-project",
   "version": "1.0.0",
-  "builtin-baseline": "VCPKG_COMMIT_SHA_HERE",
   "dependencies": [
     "boost-filesystem",
     "glm"
   ]
 }
 ```
+- For reproducible dependency versions, add a real `builtin-baseline` commit SHA from your vcpkg checkout before your first `vcpkg install`.
 - Run the bootstrap script. It clones vcpkg, installs packages from `vcpkg.json`, then uses vcpkg's bundled CMake to configure and build — no system CMake required.
 ```shell
 ./bootstrap.sh   # Linux / macOS
@@ -81,7 +81,7 @@ Before a real release, replace `GITHUB_USER/PROJECT_NAME_HERE` in `portfile.cmak
 - Tests use [doctest](https://github.com/doctest/doctest). Normal templates vendor `doctest.h`; vcpkg templates acquire it via `find_package(doctest CONFIG REQUIRED)`. `doctest_discover_tests()` registers each `TEST_CASE` as a separate CTest test entry.
 - vcpkg bootstrap scripts (`bootstrap.sh` / `bootstrap.bat`) use `vcpkg fetch cmake` to acquire vcpkg's own bundled CMake. No system CMake installation is required before running the script.
 - vcpkg templates use [manifest mode](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode): dependencies are declared in `vcpkg.json` and installed automatically when `vcpkg install` is run. The `name` field must be lowercase with hyphens.
-- The vcpkg templates include a `builtin-baseline` placeholder (`VCPKG_COMMIT_SHA_HERE`). Replace it with a real commit SHA from your vcpkg checkout (for example from `git log --oneline`) to make dependency versions reproducible.
+- Add a real `builtin-baseline` commit SHA from your vcpkg checkout (for example from `git rev-parse HEAD` or `git log --oneline`) to make dependency versions reproducible. Do not leave a placeholder string in the manifest: vcpkg expects an existing commit.
 - The templates default to C++20 (full compiler support: GCC 10+, Clang 13+, MSVC 19.29+).
 
 ## Further reading
