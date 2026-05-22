@@ -6,7 +6,15 @@ if [ ! -d "vcpkg" ] ; then git clone https://github.com/Microsoft/vcpkg.git ; fi
 cd vcpkg
 if [ ! -f "vcpkg" ] ; then ./bootstrap-vcpkg.sh ; fi
 
-export VCPKG_DEFAULT_TRIPLET=x64-linux
+_OS="$(uname -s)"
+_ARCH="$(uname -m)"
+if   [ "$_OS" = "Darwin" ] && [ "$_ARCH" = "arm64" ]; then
+  export VCPKG_DEFAULT_TRIPLET=arm64-osx
+elif [ "$_OS" = "Darwin" ]; then
+  export VCPKG_DEFAULT_TRIPLET=x64-osx
+else
+  export VCPKG_DEFAULT_TRIPLET=x64-linux
+fi
 # Add your library ports to vcpkg.json, then install all declared dependencies:
 ./vcpkg install
 
