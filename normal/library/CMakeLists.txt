@@ -8,12 +8,6 @@ set                   (CMAKE_CXX_STANDARD 17)
 set                   (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set                   (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-if   (MSVC)
-  add_compile_options (/W4)
-else ()
-  add_compile_options (-Wall -Wextra -pedantic)
-endif()
-
 ##################################################    Options     ##################################################
 option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
 option(BUILD_TESTS "Build tests." OFF)
@@ -60,6 +54,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
+target_compile_options    (${PROJECT_NAME} PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W4>
+  $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Intel>,$<CXX_COMPILER_ID:IntelLLVM>>:-Wall;-Wextra;-pedantic>
+)
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)

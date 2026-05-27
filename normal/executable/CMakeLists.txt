@@ -6,12 +6,6 @@ set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
 set                   (CMAKE_BUILD_TYPE Release)
 set                   (CMAKE_CXX_STANDARD 17)
 
-if   (MSVC)
-  add_compile_options (/W4)
-else ()
-  add_compile_options (-Wall -Wextra -pedantic)
-endif()
-
 ##################################################    Sources     ##################################################
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp include/*.ipp)
 file(GLOB_RECURSE PROJECT_SOURCES source/*.c source/*.cpp source/*.cu)
@@ -52,6 +46,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
+target_compile_options    (${PROJECT_NAME} PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W4>
+  $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Intel>,$<CXX_COMPILER_ID:IntelLLVM>>:-Wall;-Wextra;-pedantic>
+)
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 if(NOT BUILD_SHARED_LIBS)
