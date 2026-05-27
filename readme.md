@@ -52,6 +52,7 @@ Same as the normal project setup, plus:
   ]
 }
 ```
+- For reproducible dependency versions, add a real `builtin-baseline` commit SHA from your vcpkg checkout before your first `vcpkg install`.
 - Run the bootstrap script. It clones vcpkg, installs packages from `vcpkg.json`, then uses vcpkg's bundled CMake to configure and build — no system CMake required.
 ```shell
 ./bootstrap.sh   # Linux / macOS
@@ -79,7 +80,8 @@ Before a real release, replace `GITHUB_USER/PROJECT_NAME_HERE` in `portfile.cmak
 - `ENABLE_CPACK` (OFF by default) activates CPack. Fill in `CPACK_PACKAGE_VENDOR` and `CPACK_PACKAGE_DESCRIPTION_SUMMARY`, then run `cpack` after building to produce archives or installers.
 - Tests use [doctest](https://github.com/doctest/doctest). Normal templates vendor `doctest.h`; vcpkg templates acquire it via `find_package(doctest CONFIG REQUIRED)`. `doctest_discover_tests()` registers each `TEST_CASE` as a separate CTest test entry.
 - vcpkg bootstrap scripts (`bootstrap.sh` / `bootstrap.bat`) use `vcpkg fetch cmake` to acquire vcpkg's own bundled CMake. No system CMake installation is required before running the script.
-- vcpkg templates use [manifest mode](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode): dependencies are declared in `vcpkg.json` and installed automatically when `vcpkg install` is run. The `name` field must be lowercase with hyphens. Add a `builtin-baseline` (a vcpkg commit hash) for reproducible dependency versions.
+- vcpkg templates use [manifest mode](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode): dependencies are declared in `vcpkg.json` and installed automatically when `vcpkg install` is run. The `name` field must be lowercase with hyphens.
+- Add a real `builtin-baseline` commit SHA from your vcpkg checkout (for example from `git rev-parse HEAD` or `git log --oneline`) to make dependency versions reproducible. Do not leave a placeholder string in the manifest: vcpkg expects an existing commit.
 - The templates default to C++20 (full compiler support: GCC 10+, Clang 13+, MSVC 19.29+).
 
 ## Further reading

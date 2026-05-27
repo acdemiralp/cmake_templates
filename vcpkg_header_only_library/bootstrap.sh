@@ -12,6 +12,8 @@ if   [ "$_OS" = "Darwin" ] && [ "$_ARCH" = "arm64" ]; then
   export VCPKG_DEFAULT_TRIPLET=arm64-osx
 elif [ "$_OS" = "Darwin" ]; then
   export VCPKG_DEFAULT_TRIPLET=x64-osx
+elif [ "$_ARCH" = "aarch64" ] || [ "$_ARCH" = "arm64" ]; then
+  export VCPKG_DEFAULT_TRIPLET=arm64-linux
 else
   export VCPKG_DEFAULT_TRIPLET=x64-linux
 fi

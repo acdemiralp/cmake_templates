@@ -3,7 +3,7 @@
 # Based on https://github.com/doctest/doctest (MIT License).
 
 function(doctest_discover_tests TARGET)
-  cmake_parse_arguments(PARSE_ARGV 1 "" "" "WORKING_DIRECTORY;TEST_PREFIX;TEST_SUFFIX" "PROPERTIES;EXTRA_ARGS")
+  cmake_parse_arguments(PARSE_ARGV 1 "_" "" "WORKING_DIRECTORY;TEST_PREFIX;TEST_SUFFIX" "PROPERTIES;EXTRA_ARGS")
 
   if(NOT _WORKING_DIRECTORY)
     set(_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET}>")
