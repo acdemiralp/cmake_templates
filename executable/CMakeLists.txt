@@ -1,8 +1,10 @@
 ##################################################    Project     ##################################################
 cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
 project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
+list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+include               (extensions)
 
 ##################################################    Options     ##################################################
 option(ENABLE_IPO "Enable interprocedural optimization." OFF)
@@ -27,32 +29,10 @@ set (PROJECT_FILES
   ${PROJECT_SOURCES} 
   ${PROJECT_CMAKE_UTILS} 
   ${PROJECT_MISC})
-
-include            (assign_source_group)
-assign_source_group(${PROJECT_FILES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PROJECT_FILES})
 
 ##################################################  Dependencies  ##################################################
-include(import_library)
-
-# ADD LIBRARIES HERE.
-# Examples:
-# - Prefer imported targets when available:
-#   find_package(GLM REQUIRED)
-#   list(APPEND PROJECT_LIBRARIES GLM::GLM)
-# - Use import_library as a fallback for packages without imported targets:
-#   find_package  (OpenGL REQUIRED)
-#   import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-# - Or for separate debug and release libraries:
-#   find_package  (Boost REQUIRED iostreams)
-#   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
-# - You may also set PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES directly.
-
-add_library(${PROJECT_NAME}_project_warnings INTERFACE)
-if  (MSVC)
-  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE /W4)
-else()
-  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE -Wall -Wextra -pedantic)
-endif()
+make_warnings_target(TARGET_NAME ${PROJECT_NAME}_project_warnings)
 
 ##################################################    Targets     ##################################################
 add_executable(${PROJECT_NAME} ${PROJECT_FILES})
@@ -61,11 +41,19 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/source")
-target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
-target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_LIBRARIES})
 target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_project_warnings)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
-target_compile_options    (${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
+if                     (DEFINED PROJECT_INCLUDE_DIRS AND NOT "${PROJECT_INCLUDE_DIRS}" STREQUAL "")
+  target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE_DIRS})
+endif()
+if                     (DEFINED PROJECT_LIBRARIES AND NOT "${PROJECT_LIBRARIES}" STREQUAL "")
+  target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_LIBRARIES})
+endif()
+if                     (DEFINED PROJECT_COMPILE_DEFINITIONS AND NOT "${PROJECT_COMPILE_DEFINITIONS}" STREQUAL "")
+  target_compile_definitions(${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
+endif()
+if                     (DEFINED PROJECT_COMPILE_OPTIONS AND NOT "${PROJECT_COMPILE_OPTIONS}" STREQUAL "")
+  target_compile_options    (${PROJECT_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
+endif()
 set_target_properties     (${PROJECT_NAME} PROPERTIES
   CXX_EXTENSIONS OFF
   INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
@@ -73,8 +61,22 @@ set_target_properties     (${PROJECT_NAME} PROPERTIES
   UNITY_BUILD ${ENABLE_UNITY_BUILD})
 
 ##################################################  Installation  ##################################################
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-install(DIRECTORY include/ DESTINATION include)
+include               (GNUInstallDirs)
+set                   (PROJECT_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  "include(\"\\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake\")\n")
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${PROJECT_INSTALL_CMAKEDIR})
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  DESTINATION ${PROJECT_INSTALL_CMAKEDIR})
 
 ##################################################     CPack      ##################################################
 if(ENABLE_CPACK)
