@@ -1,77 +1,77 @@
 {
-  "version": 6,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 28,
-    "patch": 0
-  },
-  "configurePresets": [
+  "version"             : 10,
+  "cmakeMinimumRequired": {"major": 3, "minor": 31, "patch": 0},
+  "configurePresets"    :
+  [
     {
-      "name": "default",
-      "displayName": "Default",
-      "binaryDir": "${sourceDir}/build/default",
-      "cacheVariables": {
-        "BUILD_TESTS": "OFF",
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "name"            : "ninja-multi",
+      "generator"       : "Ninja Multi-Config",
+      "binaryDir"       : "${sourceDir}/build/${presetName}",
+      "cacheVariables"  :
+      {
+        "BUILD_TESTING"                : "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" ,
+        "CMAKE_TOOLCHAIN_FILE"         : "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
     {
-      "name": "release",
-      "displayName": "Release",
-      "binaryDir": "${sourceDir}/build/release",
-      "cacheVariables": {
-        "BUILD_TESTS": "OFF",
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    },
-    {
-      "name": "debug",
-      "displayName": "Debug",
-      "binaryDir": "${sourceDir}/build/debug",
-      "cacheVariables": {
-        "BUILD_TESTS": "OFF",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "name"            : "ninja-multi-tests",
+      "inherits"        : "ninja-multi",
+      "cacheVariables"  :
+      {
+        "BUILD_TESTING"                : "ON"
       }
     }
   ],
-  "buildPresets": [
-    {
-      "name": "default",
-      "configurePreset": "default",
-      "configuration": "Release"
-    },
-    {
-      "name": "release",
-      "configurePreset": "release",
-      "configuration": "Release"
-    },
-    {
-      "name": "debug",
-      "configurePreset": "debug",
-      "configuration": "Debug"
-    }
+  "buildPresets"        :
+  [
+    {"name": "debug"               , "configurePreset": "ninja-multi"      , "configuration" : "Debug"         },
+    {"name": "release"             , "configurePreset": "ninja-multi"      , "configuration" : "Release"       },
+    {"name": "relwithdebinfo"      , "configurePreset": "ninja-multi"      , "configuration" : "RelWithDebInfo"},
+    {"name": "debug-tests"         , "configurePreset": "ninja-multi-tests", "configuration" : "Debug"         },
+    {"name": "release-tests"       , "configurePreset": "ninja-multi-tests", "configuration" : "Release"       },
+    {"name": "relwithdebinfo-tests", "configurePreset": "ninja-multi-tests", "configuration" : "RelWithDebInfo"}
   ],
-  "testPresets": [
+  "testPresets"         :
+  [
     {
-      "name": "default",
-      "configurePreset": "default",
-      "configuration": "Release",
-      "output": { "outputOnFailure": true }
+      "name"            : "test-base",
+      "hidden"          : true,
+      "configurePreset" : "ninja-multi-tests",
+      "output"          :
+      {
+        "outputOnFailure": true
+      }
+    },
+    {"name": "debug"               , "inherits"       : "test-base"        , "configuration" : "Debug"         },
+    {"name": "release"             , "inherits"       : "test-base"        , "configuration" : "Release"       },
+    {"name": "relwithdebinfo"      , "inherits"       : "test-base"        , "configuration" : "RelWithDebInfo"}
+  ],
+  "packagePresets"      :
+  [
+    {"name": "binary"              , "configurePreset": "ninja-multi"      , "configurations": ["Release"]     },
+    {"name": "source"              , "configurePreset": "ninja-multi"                                          }
+  ],
+  "workflowPresets"     :
+  [
+    {
+      "name"            : "test",
+      "steps"           :
+      [
+        {"type": "configure", "name": "ninja-multi-tests"},
+        {"type": "build"    , "name": "release-tests"    },
+        {"type": "test"     , "name": "release"          }
+      ]
     },
     {
-      "name": "release",
-      "configurePreset": "release",
-      "configuration": "Release",
-      "output": { "outputOnFailure": true }
-    },
-    {
-      "name": "debug",
-      "configurePreset": "debug",
-      "configuration": "Debug",
-      "output": { "outputOnFailure": true }
+      "name"            : "package",
+      "steps"           :
+      [
+        {"type": "configure", "name": "ninja-multi"      },
+        {"type": "build"    , "name": "release"          },
+        {"type": "package"  , "name": "binary"           },
+        {"type": "package"  , "name": "source"           }
+      ]
     }
   ]
 }

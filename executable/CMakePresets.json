@@ -1,51 +1,40 @@
 {
-  "version": 6,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 28,
-    "patch": 0
-  },
-  "configurePresets": [
+  "version"             : 10,
+  "cmakeMinimumRequired": {"major": 3, "minor": 31, "patch": 0},
+  "configurePresets"    :
+  [
     {
-      "name": "default",
-      "displayName": "Default",
-      "binaryDir": "${sourceDir}/build/default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "release",
-      "displayName": "Release",
-      "binaryDir": "${sourceDir}/build/release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "debug",
-      "displayName": "Debug",
-      "binaryDir": "${sourceDir}/build/debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+      "name"            : "ninja-multi",
+      "generator"       : "Ninja Multi-Config",
+      "binaryDir"       : "${sourceDir}/build/${presetName}",
+      "cacheVariables"  :
+      {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }
   ],
-  "buildPresets": [
+  "buildPresets"        :
+  [
+    {"name": "debug"         , "configurePreset": "ninja-multi", "configuration" : "Debug"         },
+    {"name": "release"       , "configurePreset": "ninja-multi", "configuration" : "Release"       },
+    {"name": "relwithdebinfo", "configurePreset": "ninja-multi", "configuration" : "RelWithDebInfo"}
+  ],
+  "packagePresets"      :
+  [
+    {"name": "binary"        , "configurePreset": "ninja-multi", "configurations": ["Release"]     },
+    {"name": "source"        , "configurePreset": "ninja-multi"                                    }
+  ],
+  "workflowPresets"     :
+  [
     {
-      "name": "default",
-      "configurePreset": "default",
-      "configuration": "Release"
-    },
-    {
-      "name": "release",
-      "configurePreset": "release",
-      "configuration": "Release"
-    },
-    {
-      "name": "debug",
-      "configurePreset": "debug",
-      "configuration": "Debug"
+      "name"            : "package",
+      "steps"           :
+      [
+        {"type": "configure" , "name": "ninja-multi"},
+        {"type": "build"     , "name": "release"    },
+        {"type": "package"   , "name": "binary"     },
+        {"type": "package"   , "name": "source"     }
+      ]
     }
   ]
 }

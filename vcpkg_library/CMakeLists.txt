@@ -1,169 +1,136 @@
-##################################################    Project     ##################################################
-cmake_minimum_required(VERSION 3.28...4.3 FATAL_ERROR)
-project               (PROJECT_NAME_HERE VERSION 1.0 LANGUAGES CXX)
-list                  (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-set_property          (GLOBAL PROPERTY USE_FOLDERS ON)
+##########################################    Project     ##########################################
+cmake_minimum_required    (VERSION 3.31)
+project                   (PROJECT_NAME_HERE VERSION 0.0.0 LANGUAGES CXX)
+list                      (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include                   (extensions)
+include                   (GNUInstallDirs)
 
-##################################################    Options     ##################################################
-option(BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
-option(BUILD_TESTS "Build tests." OFF)
-option(ENABLE_IPO "Enable interprocedural optimization." OFF)
-option(ENABLE_UNITY_BUILD "Enable unity builds." OFF)
-option(ENABLE_CPACK "Enable package generation with CPack." OFF)
-
-if(ENABLE_IPO)
-  include            (CheckIPOSupported)
-  check_ipo_supported(RESULT PROJECT_IPO_SUPPORTED OUTPUT PROJECT_IPO_ERROR)
-  if(NOT PROJECT_IPO_SUPPORTED)
-    message(FATAL_ERROR "IPO is not supported: ${PROJECT_IPO_ERROR}")
-  endif()
-endif()
-
-##################################################    Sources     ##################################################
-file(GLOB_RECURSE PROJECT_HEADERS CONFIGURE_DEPENDS include/*.h include/*.hpp include/*.ipp)
-file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS source/*.c source/*.cpp source/*.cu)
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS cmake/*.cmake cmake/*.in)
-file(GLOB PROJECT_MISC CONFIGURE_DEPENDS *.bat *.gitignore *.json *.md *.py *.sh *.txt)
-set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
-set (PROJECT_FILES 
-  ${PROJECT_HEADERS} 
-  ${PROJECT_SOURCES} 
-  ${PROJECT_CMAKE_UTILS} 
-  ${PROJECT_MISC} 
-  ${PROJECT_EXPORT_HPP})
-
-include            (assign_source_group)
-assign_source_group(${PROJECT_FILES})
-
-##################################################  Dependencies  ##################################################
-include(import_library)
-
-if   (BUILD_TESTS)
-  find_package(doctest CONFIG REQUIRED)
-endif()
-
-# ADD LIBRARIES HERE. Vcpkg toolchain file will automatically locate them.
-# Examples:
-# - Prefer imported targets when available:
-#   find_package(GLM REQUIRED)
-#   list(APPEND PROJECT_LIBRARIES GLM::GLM)
-# - Use import_library as a fallback for packages without imported targets:
-#   find_package  (OpenGL REQUIRED)
-#   import_library(OPENGL_INCLUDE_DIR OPENGL_LIBRARIES)
-# - Or for separate debug and release libraries:
-#   find_package  (Boost REQUIRED iostreams)
-#   import_library(Boost_INCLUDE_DIRS Boost_IOSTREAMS_LIBRARY_DEBUG Boost_IOSTREAMS_LIBRARY_RELEASE)
-# - You may also set PROJECT_INCLUDE_DIRS and PROJECT_LIBRARIES directly.
-
-add_library(${PROJECT_NAME}_project_warnings INTERFACE)
-if  (MSVC)
-  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE /W4)
-else()
-  target_compile_options(${PROJECT_NAME}_project_warnings INTERFACE -Wall -Wextra -pedantic)
-endif()
-
-##################################################    Targets     ##################################################
-add_library(${PROJECT_NAME} ${PROJECT_FILES})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
-target_include_directories(${PROJECT_NAME} PUBLIC 
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  $<INSTALL_INTERFACE:include> PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/source")
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE_DIRS})
-target_link_libraries     (${PROJECT_NAME} PUBLIC ${PROJECT_LIBRARIES})
-target_link_libraries     (${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_project_warnings)
-target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
-target_compile_options    (${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_OPTIONS})
+##########################################     Target     ##########################################
+option                    (BUILD_SHARED_LIBS "Build shared (dynamic) libraries." ON)
+add_library               (${PROJECT_NAME})
 set_target_properties     (${PROJECT_NAME} PROPERTIES
   CXX_EXTENSIONS            OFF
   CXX_VISIBILITY_PRESET     hidden
-  INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
-  LINKER_LANGUAGE           CXX
-  UNITY_BUILD               ${ENABLE_UNITY_BUILD}
-  VISIBILITY_INLINES_HIDDEN 1)
+  VISIBILITY_INLINES_HIDDEN ON)
+target_compile_features   (${PROJECT_NAME} PUBLIC cxx_std_23)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
-if(NOT BUILD_SHARED_LIBS)
-  string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-  target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_NAME_UPPER}_STATIC)
+string                    (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
+set                       (PROJECT_EXPORT_DEFINE ${PROJECT_NAME_UPPER}_EXPORT)
+set                       (PROJECT_STATIC_DEFINE ${PROJECT_NAME_UPPER}_STATIC)
+get_target_property       (PROJECT_TARGET_TYPE ${PROJECT_NAME} TYPE)
+if   ("${PROJECT_TARGET_TYPE}" STREQUAL "STATIC_LIBRARY")
+  target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_STATIC_DEFINE})
 endif()
 
-##################################################    Postbuild   ##################################################
+##########################################    Sources     ##########################################
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS LIST_DIRECTORIES false
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/*")
+file(GLOB_RECURSE PROJECT_INCLUDES    CONFIGURE_DEPENDS LIST_DIRECTORIES false
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
+file(GLOB_RECURSE PROJECT_SOURCES     CONFIGURE_DEPENDS LIST_DIRECTORIES false
+  "${CMAKE_CURRENT_SOURCE_DIR}/source/*")
+file(GLOB         PROJECT_MISC        CONFIGURE_DEPENDS LIST_DIRECTORIES false
+  "${CMAKE_CURRENT_SOURCE_DIR}/*")
+
 include               (GenerateExportHeader)
-string                (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-generate_export_header(${PROJECT_NAME} 
-  EXPORT_FILE_NAME     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/export.hpp"
-  EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
-  STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
-)
+set                   (PROJECT_EXPORT_PATH
+  "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/export.h")
+generate_export_header(${PROJECT_NAME}
+  EXPORT_FILE_NAME  "${PROJECT_EXPORT_PATH}"
+  EXPORT_MACRO_NAME "${PROJECT_EXPORT_DEFINE}"
+  STATIC_DEFINE     "${PROJECT_STATIC_DEFINE}")
 
-##################################################   Packaging    ##################################################
-include(CMakePackageConfigHelpers)
+target_sources(${PROJECT_NAME}
+  PUBLIC
+    FILE_SET  HEADERS
+    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    FILES     ${PROJECT_INCLUDES}
+  PUBLIC
+    FILE_SET  GENERATED_HEADERS
+    TYPE      HEADERS
+    BASE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include"
+    FILES     "${PROJECT_EXPORT_PATH}"
+  PRIVATE     ${PROJECT_CMAKE_UTILS} ${PROJECT_SOURCES} ${PROJECT_MISC})
+source_group  (TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES
+  ${PROJECT_CMAKE_UTILS} ${PROJECT_INCLUDES} ${PROJECT_SOURCES} ${PROJECT_MISC})
+source_group  (TREE "${CMAKE_CURRENT_BINARY_DIR}" FILES
+  "${PROJECT_EXPORT_PATH}")
 
-set(PROJECT_CONFIG_INSTALL_DIR "lib/cmake/${PROJECT_NAME}")
+##########################################  Dependencies  ##########################################
+make_warnings_target (TARGET_NAME ${PROJECT_NAME}::warnings)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}::warnings)
 
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  INSTALL_DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}")
+##########################################    Testing     ##########################################
+include(CTest)
 
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion)
+if   (BUILD_TESTING)
+  find_package(doctest CONFIG REQUIRED)
+  include     (doctest)
 
-##################################################    Testing     ##################################################
-if(BUILD_TESTS)
-  enable_testing       ()
-  set                  (TEST_MAIN_NAME test_main)
-  set                  (TEST_MAIN_SOURCES tests/internal/main.cpp)
-  add_library          (${TEST_MAIN_NAME} OBJECT ${TEST_MAIN_SOURCES})
-  target_compile_features(${TEST_MAIN_NAME} PRIVATE cxx_std_20)
-  target_include_directories(${TEST_MAIN_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
-  target_link_libraries(${TEST_MAIN_NAME} PRIVATE doctest::doctest ${PROJECT_NAME}_project_warnings)
-  set_property         (TARGET ${TEST_MAIN_NAME} PROPERTY FOLDER tests)
-  set_target_properties(${TEST_MAIN_NAME} PROPERTIES CXX_EXTENSIONS OFF)
-  assign_source_group  (${TEST_MAIN_SOURCES})
+  file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS LIST_DIRECTORIES false
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*")
 
-  file(GLOB PROJECT_TEST_CPPS CONFIGURE_DEPENDS tests/*.c tests/*.cpp tests/*.cu)
-  foreach(_SOURCE ${PROJECT_TEST_CPPS})
-    get_filename_component(_NAME ${_SOURCE} NAME_WE)
-    add_executable        (${_NAME} ${_SOURCE} $<TARGET_OBJECTS:${TEST_MAIN_NAME}>)
-    target_include_directories(${_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests/internal")
-    target_link_libraries (${_NAME} PRIVATE ${PROJECT_NAME} doctest::doctest ${PROJECT_LIBRARIES} ${PROJECT_NAME}_project_warnings)
-    set_target_properties (${_NAME} PROPERTIES
-      CXX_EXTENSIONS OFF
-      INTERPROCEDURAL_OPTIMIZATION ${ENABLE_IPO}
-      UNITY_BUILD ${ENABLE_UNITY_BUILD})
-    doctest_discover_tests(${_NAME})
-    set_property          (TARGET ${_NAME} PROPERTY FOLDER tests)
-    assign_source_group   (${_SOURCE})
+  foreach(TEST_PATH IN LISTS PROJECT_TESTS)
+    cmake_path            (GET TEST_PATH STEM        TEST_NAME       )
+    cmake_path            (GET TEST_PATH PARENT_PATH TEST_PARENT_PATH)
+    cmake_path            (
+      RELATIVE_PATH   TEST_PARENT_PATH
+      BASE_DIRECTORY  "${CMAKE_CURRENT_SOURCE_DIR}"
+      OUTPUT_VARIABLE TEST_PARENT_RELATIVE_PATH)
+
+    add_executable        (${TEST_NAME} ${TEST_PATH})
+    set_target_properties (${TEST_NAME} PROPERTIES
+      CXX_STANDARD          23
+      CXX_STANDARD_REQUIRED ON
+      CXX_EXTENSIONS        OFF)
+    target_link_libraries (${TEST_NAME} PRIVATE
+      ${PROJECT_NAME} ${PROJECT_NAME}::warnings doctest::doctest_with_main)
+    doctest_discover_tests(${TEST_NAME})
+    set_property          (TARGET ${TEST_NAME} PROPERTY FOLDER "${TEST_PARENT_RELATIVE_PATH}")
   endforeach()
 endif()
 
-##################################################  Installation  ##################################################
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-config
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include)
-install(DIRECTORY include/ DESTINATION include)
-install(EXPORT ${PROJECT_NAME}-config
-  DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}"
-  FILE "${PROJECT_NAME}Targets.cmake"
-  NAMESPACE "${PROJECT_NAME}::")
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-  DESTINATION "${PROJECT_CONFIG_INSTALL_DIR}")
-export(EXPORT ${PROJECT_NAME}-config
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
-  NAMESPACE "${PROJECT_NAME}::")
+##########################################  Installation  ##########################################
+include(CMakePackageConfigHelpers)
+set    (PROJECT_CONFIG_INSTALL_DIR  "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set    (PROJECT_PACKAGE_FILE_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}")
 
-##################################################     CPack      ##################################################
-if(ENABLE_CPACK)
-  set(CPACK_PACKAGE_NAME              ${PROJECT_NAME})
-  set(CPACK_PACKAGE_VERSION           ${PROJECT_VERSION})
-  set(CPACK_PACKAGE_VENDOR            "")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
-  include(CPack)
-endif()
+install(
+  TARGETS              ${PROJECT_NAME}
+  EXPORT               ${PROJECT_NAME}-targets
+  FILE_SET             HEADERS           DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+  FILE_SET             GENERATED_HEADERS DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+  ARCHIVE DESTINATION  "${CMAKE_INSTALL_LIBDIR}"
+  LIBRARY DESTINATION  "${CMAKE_INSTALL_LIBDIR}"
+  RUNTIME DESTINATION  "${CMAKE_INSTALL_BINDIR}")
+install(
+  EXPORT               ${PROJECT_NAME}-targets
+  DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}"
+  FILE                 "${PROJECT_NAME}Targets.cmake"
+  NAMESPACE            "${PROJECT_NAME}::")
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake.in"
+  "${PROJECT_PACKAGE_FILE_PREFIX}Config.cmake"
+  INSTALL_DESTINATION  "${PROJECT_CONFIG_INSTALL_DIR}")
+write_basic_package_version_file(
+  "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
+  VERSION              ${PROJECT_VERSION}
+  COMPATIBILITY        SameMajorVersion)
+install(FILES
+  "${PROJECT_PACKAGE_FILE_PREFIX}Config.cmake"
+  "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
+  DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}")
+
+export(
+  EXPORT               ${PROJECT_NAME}-targets
+  FILE                 "${PROJECT_PACKAGE_FILE_PREFIX}Targets.cmake"
+  NAMESPACE            "${PROJECT_NAME}::")
+
+##########################################   Packaging    ##########################################
+set    (CPACK_SOURCE_IGNORE_FILES "\\.git/;/build/;CMakeUserPresets.json")
+include(CPack)

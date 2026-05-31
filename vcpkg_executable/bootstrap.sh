@@ -17,10 +17,9 @@ elif [ "$_ARCH" = "aarch64" ] || [ "$_ARCH" = "arm64" ]; then
 else
   export VCPKG_DEFAULT_TRIPLET=x64-linux
 fi
-# Add your library ports to vcpkg.json, then install all declared dependencies:
+
 ./vcpkg install
 
-# Use vcpkg's own bundled cmake — no system cmake required.
 CMAKE=$(./vcpkg fetch cmake 2>/dev/null | tail -1)
 cd ../..
 

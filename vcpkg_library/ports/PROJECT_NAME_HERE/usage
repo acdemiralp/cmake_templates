@@ -1,4 +1,0 @@
-project-name-here provides CMake integration:
-
-  find_package(PROJECT_NAME_HERE CONFIG REQUIRED)
-  target_link_libraries(main PRIVATE PROJECT_NAME_HERE::PROJECT_NAME_HERE)
