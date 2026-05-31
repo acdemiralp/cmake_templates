@@ -1,6 +1,6 @@
 {
   "$schema"     : "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "name"        : "PROJECT_NAME_HERE",
+  "name"        : "project-name-here",
   "version"     : "0.0.0",
   "dependencies":
   [
