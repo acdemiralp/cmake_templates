@@ -1,27 +1,17 @@
 #!/bin/bash
 
-if [ ! -d "build" ] ; then mkdir build ; fi
-cd build
-if [ ! -d "vcpkg" ] ; then git clone https://github.com/Microsoft/vcpkg.git ; fi
-cd vcpkg
-if [ ! -f "vcpkg" ] ; then ./bootstrap-vcpkg.sh ; fi
+(
 
-_OS="$(uname -s)"
-_ARCH="$(uname -m)"
-if   [ "$_OS" = "Darwin" ] && [ "$_ARCH" = "arm64" ]; then
-  export VCPKG_DEFAULT_TRIPLET=arm64-osx
-elif [ "$_OS" = "Darwin" ]; then
-  export VCPKG_DEFAULT_TRIPLET=x64-osx
-elif [ "$_ARCH" = "aarch64" ] || [ "$_ARCH" = "arm64" ]; then
-  export VCPKG_DEFAULT_TRIPLET=arm64-linux
-else
-  export VCPKG_DEFAULT_TRIPLET=x64-linux
-fi
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 
-./vcpkg install
+if [ ! -d "$SCRIPT_DIR/build"             ]; then mkdir "$SCRIPT_DIR/build"                                                 ; fi
+if [ ! -d "$SCRIPT_DIR/build/vcpkg"       ]; then git clone https://github.com/Microsoft/vcpkg.git "$SCRIPT_DIR/build/vcpkg"; fi
+if [ ! -x "$SCRIPT_DIR/build/vcpkg/vcpkg" ]; then "$SCRIPT_DIR/build/vcpkg/bootstrap-vcpkg.sh"                              ; fi
 
-CMAKE=$(./vcpkg fetch cmake 2>/dev/null | tail -1)
-cd ../..
+"$SCRIPT_DIR/build/vcpkg/vcpkg" install --x-manifest-root="$SCRIPT_DIR"
 
-"$CMAKE" --preset default
-"$CMAKE" --build --preset default --parallel
+CMAKE=$("$SCRIPT_DIR/build/vcpkg/vcpkg" fetch cmake | tail -1)
+"$CMAKE" -S "$SCRIPT_DIR" --preset ninja-multi
+"$CMAKE" --build "$SCRIPT_DIR/build/ninja-multi" --preset release --parallel
+
+)

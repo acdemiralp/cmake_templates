@@ -1,19 +1,17 @@
 @echo off
 
-if not exist "build" mkdir build
-cd build
-if not exist "vcpkg" git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-if not exist "vcpkg.exe" call bootstrap-vcpkg.bat
+setlocal
 
-set VCPKG_DEFAULT_TRIPLET=x64-windows
-rem Add your library ports to vcpkg.json, then install all declared dependencies:
-vcpkg install
+set "SCRIPT_DIR=%~dp0"
 
-rem Use vcpkg's own bundled cmake -- no system cmake required.
-set CMAKE=
-for /f "usebackq delims=" %%i in (`vcpkg fetch cmake`) do set CMAKE=%%i
-cd ..\..
+if not exist "%SCRIPT_DIR%build"                 mkdir "%SCRIPT_DIR%build"
+if not exist "%SCRIPT_DIR%build\vcpkg"           git clone https://github.com/Microsoft/vcpkg.git "%SCRIPT_DIR%build\vcpkg"
+if not exist "%SCRIPT_DIR%build\vcpkg\vcpkg.exe" call "%SCRIPT_DIR%build\vcpkg\bootstrap-vcpkg.bat"
 
-"%CMAKE%" --preset default
-"%CMAKE%" --build --preset default --parallel
+"%SCRIPT_DIR%build\vcpkg\vcpkg.exe" install --x-manifest-root="%SCRIPT_DIR%"
+
+for /f "usebackq delims=" %%i in (`"%SCRIPT_DIR%build\vcpkg\vcpkg.exe" fetch cmake`) do set "CMAKE=%%i"
+"%CMAKE%" -S "%SCRIPT_DIR%" --preset ninja-multi
+"%CMAKE%" --build "%SCRIPT_DIR%build\ninja-multi" --preset release --parallel
+
+endlocal
