@@ -3,11 +3,8 @@ Concise and modern CMake templates for C++ executables and libraries.
 
 ## Setup
 Prompt your AI assistant with:
-```text
-Create a new [executable|header-only library|library] [with vcpkg] 
-called [project_name] from acdemiralp/cmake_templates and apply 
-the setup steps from the repository readme.
-```
+<code style="white-space: pre-wrap;">Create a new [executable|header-only library|library] [with vcpkg] called [project_name] from acdemiralp/cmake_templates and apply the setup steps from the repository readme.
+</code>
 Alternatively:
 - Copy the desired template directory and rename it to your project name.
 - Rename the `include/PROJECT_NAME_HERE` directory to your project name.
