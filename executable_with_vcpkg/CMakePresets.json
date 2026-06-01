@@ -10,7 +10,8 @@
       "cacheVariables"  :
       {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_TOOLCHAIN_FILE"         : "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE"         : "${sourceDir}/build/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_INSTALLED_DIR"          : "${sourceDir}/build/vcpkg_installed"
       }
     }
   ],
