@@ -21,8 +21,18 @@
   ],
   "packagePresets"      :
   [
-    {"name": "binary"        , "configurePreset": "ninja-multi", "configurations": ["Release"]     },
-    {"name": "source"        , "configurePreset": "ninja-multi"                                    }
+    {
+      "name"            : "binary"     ,
+      "configurePreset" : "ninja-multi",
+      "configurations"  : ["Release"]  ,
+      "generators"      : ["ZIP"]
+    },
+    {
+      "name"            : "source"     ,
+      "configurePreset" : "ninja-multi",
+      "configFile"      : "${sourceDir}/build/ninja-multi/CPackSourceConfig.cmake",
+      "generators"      : ["ZIP"]
+    }
   ],
   "workflowPresets"     :
   [

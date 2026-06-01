@@ -96,5 +96,5 @@ export(
   NAMESPACE            "${PROJECT_NAME}::")
 
 ##########################################   Packaging    ##########################################
-set    (CPACK_SOURCE_IGNORE_FILES "\\.git/;/build/;CMakeUserPresets.json")
+set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
 include(CPack)

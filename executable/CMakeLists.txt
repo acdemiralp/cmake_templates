@@ -44,5 +44,5 @@ endif ()
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 ##########################################   Packaging    ##########################################
-set    (CPACK_SOURCE_IGNORE_FILES "\\.git/;/build/;CMakeUserPresets.json")
+set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
 include(CPack)
