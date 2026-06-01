@@ -50,10 +50,11 @@ if   (BUILD_TESTING)
       GITHUB_REPOSITORY doctest/doctest
       VERSION           2.5.2
       OPTIONS           "DOCTEST_WITH_TESTS OFF")
+    include      (${DOCTEST_CMAKE_HELPER})
   else ()
-    find_package(doctest CONFIG REQUIRED)
+    find_package (doctest CONFIG REQUIRED)
+    include      (doctest)
   endif()
-  include(doctest)
 
   file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS LIST_DIRECTORIES false
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*")

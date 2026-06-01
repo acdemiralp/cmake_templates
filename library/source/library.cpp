@@ -1,4 +1,4 @@
 void nothing()
 {
-  // Remove this function once you add your own headers and sources.
+  // This exists for the compilation to succeed. Remove it once you add your own sources.
 }
