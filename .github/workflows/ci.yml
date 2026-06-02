@@ -118,6 +118,7 @@ jobs:
 
     steps:
       - name: Grid
+        id: grid
         uses: actions/github-script@v7
         with:
           script: |
@@ -159,3 +160,53 @@ jobs:
             );
 
             await core.summary.addRaw([header, sep, ...rows].join('\n')).write();
+
+            core.setOutput('results', JSON.stringify(results));
+
+      - name: Update badges
+        if: github.event_name == 'push' && vars.GIST_ID != ''
+        uses: actions/github-script@v7
+        env:
+          GIST_ID : ${{ vars.GIST_ID }}
+          RESULTS : ${{ steps.grid.outputs.results }}
+        with:
+          github-token: ${{ secrets.GIST_TOKEN }}
+          script: |
+            const results   = JSON.parse(process.env.RESULTS);
+            const gist_id   = process.env.GIST_ID;
+            const templates = [
+              'executable',
+              'executable_with_vcpkg',
+              'header_only_library',
+              'header_only_library_with_vcpkg',
+              'library',
+              'library_with_vcpkg',
+            ];
+            const columns = [
+              ['windows-latest', 'msvc' ],
+              ['windows-latest', 'clang'],
+              ['macos-latest',   'clang'],
+              ['macos-latest',   'gcc'  ],
+              ['ubuntu-latest',  'clang'],
+              ['ubuntu-latest',  'gcc'  ],
+            ];
+            const slug = (os, cc) => `${os.replace('-latest', '')}_${cc}`;
+
+            const files = {};
+            for (const t of templates) {
+              for (const [os, cc] of columns) {
+                const conclusion = results[`${t}|${os}|${cc}`];
+                const passing    = conclusion === 'success';
+                const excluded   = conclusion === undefined;
+                files[`${t}_${slug(os, cc)}.json`] = {
+                  content: JSON.stringify({
+                    schemaVersion: 1,
+                    label        : '',
+                    message      : excluded ? 'n/a'     : (passing ? 'passing' : 'failing'),
+                    color        : excluded ? 'inactive': (passing ? 'brightgreen' : 'red'),
+                  }),
+                };
+              }
+            }
+
+            await github.rest.gists.update({ gist_id, files });
