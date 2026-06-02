@@ -25,4 +25,3 @@ Alternatively:
 
 ## Notes
 - Templates follow modern CMake best practices and the [VCPKG CMake Style Guide](https://learn.microsoft.com/en-us/vcpkg/contributing/cmake-guidelines), with the following exceptions: Alignment and glob are used, variable names are uppercase.
-- Future direction: CppCheck and Clang-Tidy integration.
