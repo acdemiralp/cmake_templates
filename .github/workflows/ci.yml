@@ -170,7 +170,7 @@ jobs:
             core.setOutput('results', JSON.stringify(results));
 
       - name: Update badges
-        if: github.event_name == 'push' && vars.GIST_ID != ''
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && vars.GIST_ID != ''
         uses: actions/github-script@v7
         env:
           GIST_ID : ${{ vars.GIST_ID }}
