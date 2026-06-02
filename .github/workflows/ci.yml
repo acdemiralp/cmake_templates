@@ -85,23 +85,25 @@ jobs:
       - name: Setup vcpkg
         if: contains(matrix.template, 'with_vcpkg') && runner.os != 'Windows'
         run: |
-          git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{ matrix.template }}/build/vcpkg
-          ${{ matrix.template }}/build/vcpkg/bootstrap-vcpkg.sh -disableMetrics
-          ${{ matrix.template }}/build/vcpkg/vcpkg install \
-            --vcpkg-root ${{ matrix.template }}/build/vcpkg \
-            --x-manifest-root ${{ matrix.template }} \
-            --x-install-root ${{ matrix.template }}/build/vcpkg_installed
+          mkdir -p "${{ matrix.template }}/build"
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ matrix.template }}/build/vcpkg"
+          "${{ matrix.template }}/build/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          "${{ matrix.template }}/build/vcpkg/vcpkg" install \
+            --vcpkg-root "${{ matrix.template }}/build/vcpkg" \
+            --x-manifest-root "${{ matrix.template }}" \
+            --x-install-root "${{ matrix.template }}/build/vcpkg_installed"
 
       - name: Setup vcpkg (Windows)
         if: contains(matrix.template, 'with_vcpkg') && runner.os == 'Windows'
         shell: cmd
         run: |
-          git clone --depth 1 https://github.com/Microsoft/vcpkg.git ${{ matrix.template }}\build\vcpkg
-          call ${{ matrix.template }}\build\vcpkg\bootstrap-vcpkg.bat -disableMetrics
-          ${{ matrix.template }}\build\vcpkg\vcpkg.exe install ^
-            --vcpkg-root=${{ matrix.template }}\build\vcpkg ^
-            --x-manifest-root=${{ matrix.template }} ^
-            --x-install-root=${{ matrix.template }}\build\vcpkg_installed
+          if not exist "${{ matrix.template }}\build" mkdir "${{ matrix.template }}\build"
+          git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ matrix.template }}\build\vcpkg"
+          call "${{ matrix.template }}\build\vcpkg\bootstrap-vcpkg.bat" -disableMetrics
+          "${{ matrix.template }}\build\vcpkg\vcpkg.exe" install ^
+            --vcpkg-root="${{ matrix.template }}\build\vcpkg" ^
+            --x-manifest-root="${{ matrix.template }}" ^
+            --x-install-root="${{ matrix.template }}\build\vcpkg_installed"
 
       - name: Test
         if: matrix.template != 'executable' && matrix.template != 'executable_with_vcpkg'
