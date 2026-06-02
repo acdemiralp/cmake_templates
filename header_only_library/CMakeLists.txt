@@ -72,8 +72,9 @@ if   (BUILD_TESTING)
       CXX_STANDARD          23
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS        OFF)
+    target_compile_definitions(${TEST_NAME} PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
     target_link_libraries (${TEST_NAME} PRIVATE
-      ${PROJECT_NAME} ${PROJECT_NAME}::warnings doctest::doctest_with_main)
+      ${PROJECT_NAME} ${PROJECT_NAME}::warnings doctest::doctest)
     doctest_discover_tests(${TEST_NAME})
     set_property          (TARGET ${TEST_NAME} PROPERTY FOLDER "${TEST_PARENT_RELATIVE_PATH}")
   endforeach()
