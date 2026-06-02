@@ -37,6 +37,10 @@
       "name"            : "test-base",
       "hidden"          : true,
       "configurePreset" : "ninja-multi-tests",
+      "execution"       :
+      {
+        "jobs"          : 0
+      },
       "output"          :
       {
         "outputOnFailure": true

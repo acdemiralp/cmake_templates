@@ -4,14 +4,21 @@ setlocal
 
 for %%I in ("%~dp0\.") do set "SCRIPT_DIR=%%~fI"
 
-if not exist "%SCRIPT_DIR%\build"                 mkdir "%SCRIPT_DIR%\build"
-if not exist "%SCRIPT_DIR%\build\vcpkg"           git clone --depth 1 https://github.com/Microsoft/vcpkg.git "%SCRIPT_DIR%\build\vcpkg"
-if not exist "%SCRIPT_DIR%\build\vcpkg\vcpkg.exe" call "%SCRIPT_DIR%\build\vcpkg\bootstrap-vcpkg.bat"
+set "BUILD_DIR=%SCRIPT_DIR%\build"
+set "VCPKG_DIR=%BUILD_DIR%\vcpkg"
+set "VCPKG=%VCPKG_DIR%\vcpkg.exe"
 
-"%SCRIPT_DIR%\build\vcpkg\vcpkg.exe" --vcpkg-root="%SCRIPT_DIR%\build\vcpkg" install --x-manifest-root="%SCRIPT_DIR%" --x-install-root="%SCRIPT_DIR%\build\vcpkg_installed"
+if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
+if not exist "%VCPKG_DIR%" git clone --depth 1 https://github.com/Microsoft/vcpkg.git "%VCPKG_DIR%"
+if not exist "%VCPKG%"     call "%VCPKG_DIR%\bootstrap-vcpkg.bat" -disableMetrics
 
-for /f "usebackq delims=" %%i in (`"%SCRIPT_DIR%\build\vcpkg\vcpkg.exe" --vcpkg-root="%SCRIPT_DIR%\build\vcpkg" fetch cmake`) do set "CMAKE=%%i"
-"%CMAKE%" -S "%SCRIPT_DIR%" --preset ninja-multi
-"%CMAKE%" --build "%SCRIPT_DIR%\build\ninja-multi" --preset release --parallel
+"%VCPKG%" install --vcpkg-root="%VCPKG_DIR%" --x-manifest-root="%SCRIPT_DIR%" --x-install-root="%BUILD_DIR%\vcpkg_installed"
+"%VCPKG%" fetch cmake --vcpkg-root="%VCPKG_DIR%"
+
+for /f "delims=" %%i in ('where /r "%VCPKG_DIR%\downloads\tools" cmake.exe') do set "CMAKE=%%~fi"
+cd /d "%SCRIPT_DIR%"
+"%CMAKE%" --preset ninja-multi
+"%CMAKE%" --build --preset debug
+"%CMAKE%" --build --preset release
 
 endlocal
