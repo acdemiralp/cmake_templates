@@ -13,7 +13,7 @@ if not exist "%VCPKG_DIR%" git clone --depth 1 https://github.com/Microsoft/vcpk
 if not exist "%VCPKG%"     call "%VCPKG_DIR%\bootstrap-vcpkg.bat" -disableMetrics
 
 "%VCPKG%" install --vcpkg-root="%VCPKG_DIR%" --x-manifest-root="%SCRIPT_DIR%" --x-install-root="%BUILD_DIR%\vcpkg_installed"
-for /f "delims=" %%i in ('"%VCPKG%" fetch cmake --vcpkg-root="%VCPKG_DIR%"') do set "CMAKE=%%~i"
+for /f "delims=" %%i in ('^""%VCPKG%" fetch cmake --vcpkg-root="%VCPKG_DIR%"^"') do set "CMAKE=%%~i"
 
 cd /d "%SCRIPT_DIR%"
 "%CMAKE%" --preset ninja-multi
