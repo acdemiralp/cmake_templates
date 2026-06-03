@@ -13,10 +13,11 @@ if [ ! -d "$VCPKG_DIR" ]; then git clone --depth 1 https://github.com/Microsoft/
 if [ ! -x "$VCPKG"     ]; then "$VCPKG_DIR/bootstrap-vcpkg.sh" -disableMetrics                        ; fi
 
 "$VCPKG" install --vcpkg-root "$VCPKG_DIR" --x-manifest-root "$SCRIPT_DIR" --x-install-root "$BUILD_DIR/vcpkg_installed"
+CMAKE=$("$VCPKG" fetch cmake --vcpkg-root "$VCPKG_DIR" | tail -n 1)
 
 cd "$SCRIPT_DIR"
-cmake --preset ninja-multi
-cmake --build --preset debug
-cmake --build --preset release
+"$CMAKE" --preset ninja-multi
+"$CMAKE" --build --preset debug
+"$CMAKE" --build --preset release
 
 )
