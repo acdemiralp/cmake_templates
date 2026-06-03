@@ -86,7 +86,7 @@ jobs:
           ./bootstrap.sh
 
       - name : Test
-        if   : !startsWith(matrix.template, 'executable')
+        if   : ${{ !startsWith(matrix.template, 'executable') }}
         run  : cmake --workflow --preset test
 
       - name : Package
