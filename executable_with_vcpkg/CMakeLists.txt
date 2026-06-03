@@ -31,6 +31,7 @@ source_group  (TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_FILES})
 ##########################################  Dependencies  ##########################################
 make_warnings_target (TARGET_NAME ${PROJECT_NAME}::warnings)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}::warnings)
+enable_vcpkg_cppcheck(TARGET_NAME ${PROJECT_NAME})
 
 ##########################################  Installation  ##########################################
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")

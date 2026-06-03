@@ -31,6 +31,11 @@ source_group  (TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${PROJECT_FILES})
 ##########################################  Dependencies  ##########################################
 make_warnings_target (TARGET_NAME ${PROJECT_NAME}::warnings)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}::warnings)
+enable_cppcheck(
+  TARGET_NAME ${PROJECT_NAME}
+  DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/cmake"
+  VERSION     "2.17.1"
+  HASH        "bfd681868248ec03855ca7c2aea7bcb1f39b8b18860d76aec805a92a967b966c")
 
 option(${PROJECT_NAME}_USE_CPM "Use CPM: The unofficial CMake package manager." ON)
 if    (${PROJECT_NAME}_USE_CPM)
