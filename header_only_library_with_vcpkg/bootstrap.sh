@@ -13,9 +13,8 @@ if [ ! -d "$VCPKG_DIR" ]; then git clone --depth 1 https://github.com/Microsoft/
 if [ ! -x "$VCPKG"     ]; then "$VCPKG_DIR/bootstrap-vcpkg.sh" -disableMetrics                        ; fi
 
 "$VCPKG" install --vcpkg-root "$VCPKG_DIR" --x-manifest-root "$SCRIPT_DIR" --x-install-root "$BUILD_DIR/vcpkg_installed"
-"$VCPKG" fetch cmake --vcpkg-root "$VCPKG_DIR"
+CMAKE=$("$VCPKG" fetch cmake --vcpkg-root "$VCPKG_DIR" | tail -n 1)
 
-CMAKE=$(find "$VCPKG_DIR/downloads/tools" -type f \( -path '*/bin/cmake' -o -path '*/bin/cmake.exe' \) | LC_ALL=C sort | tail -n 1)
 cd "$SCRIPT_DIR"
 "$CMAKE" --preset ninja-multi
 "$CMAKE" --build --preset debug
