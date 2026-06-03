@@ -1,0 +1,90 @@
+{
+  "version"             : 10,
+  "cmakeMinimumRequired": {"major": 3, "minor": 31, "patch": 0},
+  "configurePresets"    :
+  [
+    {
+      "name"            : "ninja-multi",
+      "generator"       : "Ninja Multi-Config",
+      "binaryDir"       : "${sourceDir}/build/${presetName}",
+      "cacheVariables"  :
+      {
+        "BUILD_TESTING"                : "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name"            : "ninja-multi-tests",
+      "inherits"        : "ninja-multi",
+      "cacheVariables"  :
+      {
+        "BUILD_TESTING"                : "ON"
+      }
+    }
+  ],
+  "buildPresets"        :
+  [
+    {"name": "debug"               , "configurePreset": "ninja-multi"      , "configuration" : "Debug"         },
+    {"name": "release"             , "configurePreset": "ninja-multi"      , "configuration" : "Release"       },
+    {"name": "relwithdebinfo"      , "configurePreset": "ninja-multi"      , "configuration" : "RelWithDebInfo"},
+    {"name": "debug-tests"         , "configurePreset": "ninja-multi-tests", "configuration" : "Debug"         },
+    {"name": "release-tests"       , "configurePreset": "ninja-multi-tests", "configuration" : "Release"       },
+    {"name": "relwithdebinfo-tests", "configurePreset": "ninja-multi-tests", "configuration" : "RelWithDebInfo"}
+  ],
+  "testPresets"         :
+  [
+    {
+      "name"            : "test-base",
+      "hidden"          : true,
+      "configurePreset" : "ninja-multi-tests",
+      "execution"       :
+      {
+        "jobs"          : 0
+      },
+      "output"          :
+      {
+        "outputOnFailure": true
+      }
+    },
+    {"name": "debug"               , "inherits"       : "test-base"        , "configuration" : "Debug"         },
+    {"name": "release"             , "inherits"       : "test-base"        , "configuration" : "Release"       },
+    {"name": "relwithdebinfo"      , "inherits"       : "test-base"        , "configuration" : "RelWithDebInfo"}
+  ],
+  "packagePresets"      :
+  [
+    {
+      "name"            : "binary"     ,
+      "configurePreset" : "ninja-multi",
+      "configurations"  : ["Release"]  ,
+      "generators"      : ["ZIP"]
+    },
+    {
+      "name"            : "source"     ,
+      "configurePreset" : "ninja-multi",
+      "configFile"      : "${sourceDir}/build/ninja-multi/CPackSourceConfig.cmake",
+      "generators"      : ["ZIP"]
+    }
+  ],
+  "workflowPresets"     :
+  [
+    {
+      "name"            : "test",
+      "steps"           :
+      [
+        {"type": "configure", "name": "ninja-multi-tests"},
+        {"type": "build"    , "name": "release-tests"    },
+        {"type": "test"     , "name": "release"          }
+      ]
+    },
+    {
+      "name"            : "package",
+      "steps"           :
+      [
+        {"type": "configure", "name": "ninja-multi"      },
+        {"type": "build"    , "name": "release"          },
+        {"type": "package"  , "name": "binary"           },
+        {"type": "package"  , "name": "source"           }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.template }} / ${{ matrix.target.os }} / ${{ matrix.target.compiler }}
+    runs-on: ${{ matrix.target.os }}
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ matrix.template }}
+    strategy:
+      fail-fast: false
+      matrix:
+        template:
+          - executable
+          - executable_with_vcpkg
+          - header_only_library
+          - header_only_library_with_vcpkg
+          - library
+          - library_with_vcpkg
+        target:
+          - { os: windows-latest, compiler: clang }
+          - { os: windows-latest, compiler: msvc  }
+          - { os: macos-latest  , compiler: clang }
+          - { os: macos-latest  , compiler: gcc   }
+          - { os: ubuntu-latest , compiler: clang }
+          - { os: ubuntu-latest , compiler: gcc   }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        if  : matrix.target.os == 'windows-latest'
+
+      - name : Setup Compiler
+        if   : matrix.target.compiler != 'msvc'
+        shell: bash
+        run  : |
+          case "${{ matrix.target.os }}/${{ matrix.target.compiler }}" in
+            windows-latest/clang)
+              echo "CC=clang-cl"  >> "$GITHUB_ENV"
+              echo "CXX=clang-cl" >> "$GITHUB_ENV"
+              ;;
+            macos-latest/clang)
+              echo "CC=clang"     >> "$GITHUB_ENV"
+              echo "CXX=clang++"  >> "$GITHUB_ENV"
+              ;;
+            macos-latest/gcc)
+              GCC_PREFIX=$(brew --prefix gcc)
+              GCC_VER=$(ls "${GCC_PREFIX}/bin/gcc-"* | grep -oE '[0-9]+$' | sort -n | tail -1)
+              echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VER}"  >> "$GITHUB_ENV"
+              echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VER}" >> "$GITHUB_ENV"
+              ;;
+            ubuntu-latest/clang)
+              echo "CC=clang"     >> "$GITHUB_ENV"
+              echo "CXX=clang++"  >> "$GITHUB_ENV"
+              ;;
+            ubuntu-latest/gcc)
+              echo "CC=gcc"       >> "$GITHUB_ENV"
+              echo "CXX=g++"      >> "$GITHUB_ENV"
+              ;;
+          esac
+
+      - name : Bootstrap VCPKG (Windows)
+        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os == 'windows-latest'
+        shell: cmd
+        run  : call bootstrap.bat
+
+      - name : Bootstrap VCPKG (Unix)
+        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os != 'windows-latest'
+        shell: bash
+        run  : |
+          chmod +x ./bootstrap.sh
+          ./bootstrap.sh
+
+      - name : Test
+        if   : ${{ !startsWith(matrix.template, 'executable') }}
+        run  : cmake --workflow --preset test
+
+      - name : Package
+        run  : cmake --workflow --preset package
