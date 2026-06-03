@@ -76,6 +76,8 @@ jobs:
       - name : Bootstrap VCPKG (Windows)
         if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os == 'windows-latest'
         shell: cmd
+        env  :
+          VCPKG_DOWNLOADS: C:\vcpkg-dl
         run  : call bootstrap.bat
 
       - name : Bootstrap VCPKG (Unix)
