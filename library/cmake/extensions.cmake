@@ -65,3 +65,12 @@ function     (make_warnings_target)
     "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-Wall;-Wextra;-Wpedantic>")
   add_library           ("${ARG_TARGET_NAME}" ALIAS "${INTERNAL_TARGET_NAME}")
 endfunction  ()
+
+function     (add_package_dependency)
+  if   (ARGC EQUAL 0)
+    message(FATAL_ERROR "The ${CMAKE_CURRENT_FUNCTION} requires at least one argument.")
+  endif()
+
+  string(REPLACE ";" " " PACKAGE_ARGUMENTS "${ARGV}")
+  set   (PACKAGE_DEPENDENCIES "${PACKAGE_DEPENDENCIES}find_dependency(${PACKAGE_ARGUMENTS})\n" PARENT_SCOPE)
+endfunction  ()
