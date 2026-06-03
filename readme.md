@@ -1,5 +1,5 @@
 # CMake Templates
-Concise and modern CMake templates for C++ executables and libraries.
+Concise CMake 3.31+ templates for C++ executables and libraries.
 
 ## Setup
 Prompt your AI assistant with:

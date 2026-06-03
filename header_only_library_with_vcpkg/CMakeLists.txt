@@ -33,7 +33,9 @@ source_group  (TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES
 make_warnings_target(TARGET_NAME ${PROJECT_NAME}::warnings)
 
 ##########################################    Testing     ##########################################
-include(CTest)
+if   (PROJECT_IS_TOP_LEVEL)
+  include(CTest)
+endif()
 
 if   (BUILD_TESTING)
   find_package(doctest CONFIG REQUIRED)
@@ -90,11 +92,6 @@ install(FILES
   "${PROJECT_PACKAGE_FILE_PREFIX}Config.cmake"
   "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
   DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}")
-
-export(
-  EXPORT               ${PROJECT_NAME}-targets
-  FILE                 "${PROJECT_PACKAGE_FILE_PREFIX}Targets.cmake"
-  NAMESPACE            "${PROJECT_NAME}::")
 
 ##########################################   Packaging    ##########################################
 set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
