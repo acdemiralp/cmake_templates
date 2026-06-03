@@ -8,9 +8,6 @@ include                   (GNUInstallDirs)
 ##########################################     Target     ##########################################
 add_library               (${PROJECT_NAME} INTERFACE)
 target_compile_features   (${PROJECT_NAME} INTERFACE cxx_std_23)
-target_include_directories(${PROJECT_NAME} INTERFACE
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 ##########################################    Sources     ##########################################
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS LIST_DIRECTORIES false
@@ -41,7 +38,9 @@ if    (${PROJECT_NAME}_USE_CPM)
 endif ()
 
 ##########################################    Testing     ##########################################
-include(CTest)
+if   (PROJECT_IS_TOP_LEVEL)
+  include(CTest)
+endif()
 
 if   (BUILD_TESTING)
   if   (COMMAND CPMAddPackage)
@@ -88,7 +87,7 @@ set    (PROJECT_PACKAGE_FILE_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 install(
   TARGETS              ${PROJECT_NAME}
   EXPORT               ${PROJECT_NAME}-targets
-  FILE_SET             HEADERS DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+  FILE_SET             HEADERS)
 install(
   EXPORT               ${PROJECT_NAME}-targets
   DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}"
@@ -107,11 +106,6 @@ install(FILES
   "${PROJECT_PACKAGE_FILE_PREFIX}Config.cmake"
   "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
   DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}")
-
-export(
-  EXPORT               ${PROJECT_NAME}-targets
-  FILE                 "${PROJECT_PACKAGE_FILE_PREFIX}Targets.cmake"
-  NAMESPACE            "${PROJECT_NAME}::")
 
 ##########################################   Packaging    ##########################################
 set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")

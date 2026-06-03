@@ -36,7 +36,16 @@ function     (make_warnings_target)
   set                   (INTERNAL_TARGET_NAME "warnings_${TARGET_HASH}")
   add_library           ("${INTERNAL_TARGET_NAME}" INTERFACE)
   target_compile_options("${INTERNAL_TARGET_NAME}" INTERFACE
-    "$<$<COMPILE_LANGUAGE:CXX>:$<$<OR:$<CXX_COMPILER_ID:MSVC>,$<STREQUAL:${CMAKE_CXX_SIMULATE_ID},MSVC>>:/permissive-;/W4>>"
-    "$<$<COMPILE_LANGUAGE:CXX>:$<$<NOT:$<OR:$<CXX_COMPILER_ID:MSVC>,$<STREQUAL:${CMAKE_CXX_SIMULATE_ID},MSVC>>>:-Wall;-Wextra;-Wpedantic>>")
+    "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>:/permissive-;/W4>"
+    "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>>>:-Wall;-Wextra;-Wpedantic>")
   add_library           ("${ARG_TARGET_NAME}" ALIAS "${INTERNAL_TARGET_NAME}")
+endfunction  ()
+
+function     (add_package_dependency)
+  if   (ARGC EQUAL 0)
+    message(FATAL_ERROR "The ${CMAKE_CURRENT_FUNCTION} requires at least one argument.")
+  endif()
+
+  string(REPLACE ";" " " PACKAGE_ARGUMENTS "${ARGV}")
+  set   (PACKAGE_DEPENDENCIES "${PACKAGE_DEPENDENCIES}find_dependency(${PACKAGE_ARGUMENTS})\n" PARENT_SCOPE)
 endfunction  ()
