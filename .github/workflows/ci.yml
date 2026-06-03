@@ -4,17 +4,18 @@ on:
   push:
     branches:
       - main
-      - master
       - develop
   pull_request:
 
 jobs:
   build:
-    name: ${{ matrix.template }} / ${{ matrix.os }} / ${{ matrix.compiler }}
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.template }} / ${{ matrix.target.os }} / ${{ matrix.target.compiler }}
+    runs-on: ${{ matrix.target.os }}
     permissions:
       contents: read
-
+    defaults:
+      run:
+        working-directory: ${{ matrix.template }}
     strategy:
       fail-fast: false
       matrix:
@@ -25,19 +26,13 @@ jobs:
           - header_only_library_with_vcpkg
           - library
           - library_with_vcpkg
-        os:
-          - windows-latest
-          - macos-latest
-          - ubuntu-latest
-        compiler:
-          - msvc
-          - clang
-          - gcc
-        exclude:
-          - { os: macos-latest  , compiler: msvc }
-          - { os: ubuntu-latest , compiler: msvc }
-          - { os: windows-latest, compiler: gcc  }
-
+        target:
+          - { os: windows-latest, compiler: clang }
+          - { os: windows-latest, compiler: msvc  }
+          - { os: macos-latest  , compiler: clang }
+          - { os: macos-latest  , compiler: gcc   }
+          - { os: ubuntu-latest , compiler: clang }
+          - { os: ubuntu-latest , compiler: gcc   }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,173 +41,53 @@ jobs:
         uses: lukka/get-cmake@latest
 
       - name: Setup MSVC
-        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
+        if  : matrix.target.os == 'windows-latest'
 
-      - name: Set compiler (Windows / Clang)
-        if: runner.os == 'Windows' && matrix.compiler == 'clang'
+      - name : Setup Compiler
+        if   : matrix.target.compiler != 'msvc'
         shell: bash
-        run: |
-          echo "CC=clang-cl"  >> $GITHUB_ENV
-          echo "CXX=clang-cl" >> $GITHUB_ENV
+        run  : |
+          case "${{ matrix.target.os }}/${{ matrix.target.compiler }}" in
+            windows-latest/clang)
+              echo "CC=clang-cl"  >> "$GITHUB_ENV"
+              echo "CXX=clang-cl" >> "$GITHUB_ENV"
+              ;;
+            macos-latest/clang)
+              echo "CC=clang"     >> "$GITHUB_ENV"
+              echo "CXX=clang++"  >> "$GITHUB_ENV"
+              ;;
+            macos-latest/gcc)
+              GCC_PREFIX=$(brew --prefix gcc)
+              GCC_VER=$(ls "${GCC_PREFIX}/bin/gcc-"* | grep -oE '[0-9]+$' | sort -n | tail -1)
+              echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VER}"  >> "$GITHUB_ENV"
+              echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VER}" >> "$GITHUB_ENV"
+              ;;
+            ubuntu-latest/clang)
+              echo "CC=clang"     >> "$GITHUB_ENV"
+              echo "CXX=clang++"  >> "$GITHUB_ENV"
+              ;;
+            ubuntu-latest/gcc)
+              echo "CC=gcc"       >> "$GITHUB_ENV"
+              echo "CXX=g++"      >> "$GITHUB_ENV"
+              ;;
+          esac
 
-      - name: Set compiler (macOS / Clang)
-        if: runner.os == 'macOS' && matrix.compiler == 'clang'
-        run: |
-          echo "CC=clang"    >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
-      - name: Set compiler (macOS / GCC)
-        if: runner.os == 'macOS' && matrix.compiler == 'gcc'
-        run: |
-          GCC_PREFIX=$(brew --prefix gcc)
-          GCC_VER=$(ls "${GCC_PREFIX}/bin/gcc-"* | grep -oE '[0-9]+$' | sort -n | tail -1)
-          echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VER}"   >> $GITHUB_ENV
-          echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VER}"  >> $GITHUB_ENV
-
-      - name: Set compiler (Linux / Clang)
-        if: runner.os == 'Linux' && matrix.compiler == 'clang'
-        run: |
-          echo "CC=clang"    >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
-      - name: Set compiler (Linux / GCC)
-        if: runner.os == 'Linux' && matrix.compiler == 'gcc'
-        run: |
-          echo "CC=gcc"  >> $GITHUB_ENV
-          echo "CXX=g++" >> $GITHUB_ENV
-
-      - name: Setup vcpkg
-        if: contains(matrix.template, 'with_vcpkg') && runner.os != 'Windows'
-        run: |
-          mkdir -p "${{ matrix.template }}/build"
-          git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ matrix.template }}/build/vcpkg"
-          "${{ matrix.template }}/build/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
-          "${{ matrix.template }}/build/vcpkg/vcpkg" install \
-            --vcpkg-root "${{ matrix.template }}/build/vcpkg" \
-            --x-manifest-root "${{ matrix.template }}" \
-            --x-install-root "${{ matrix.template }}/build/vcpkg_installed"
-
-      - name: Setup vcpkg (Windows)
-        if: contains(matrix.template, 'with_vcpkg') && runner.os == 'Windows'
+      - name : Bootstrap VCPKG (Windows)
+        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os == 'windows-latest'
         shell: cmd
-        run: |
-          if not exist "${{ matrix.template }}\build" mkdir "${{ matrix.template }}\build"
-          git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ matrix.template }}\build\vcpkg"
-          call "${{ matrix.template }}\build\vcpkg\bootstrap-vcpkg.bat" -disableMetrics
-          "${{ matrix.template }}\build\vcpkg\vcpkg.exe" install ^
-            --vcpkg-root="${{ matrix.template }}\build\vcpkg" ^
-            --x-manifest-root="${{ matrix.template }}" ^
-            --x-install-root="${{ matrix.template }}\build\vcpkg_installed"
+        run  : call bootstrap.bat
 
-      - name: Test
-        if: matrix.template != 'executable' && matrix.template != 'executable_with_vcpkg'
-        working-directory: ${{ matrix.template }}
-        run: cmake --workflow --preset test
+      - name : Bootstrap VCPKG (Unix)
+        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os != 'windows-latest'
+        shell: bash
+        run  : |
+          chmod +x ./bootstrap.sh
+          ./bootstrap.sh
 
-      - name: Package
-        working-directory: ${{ matrix.template }}
-        run: cmake --workflow --preset package
+      - name : Test
+        if   : !startsWith(matrix.template, 'executable')
+        run  : cmake --workflow --preset test
 
-  summary:
-    name: Summary
-    needs: build
-    if: always()
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-
-    steps:
-      - name: Grid
-        id: grid
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: { jobs } } = await github.rest.actions.listJobsForWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId,
-            });
-
-            const templates = [
-              'executable',
-              'executable_with_vcpkg',
-              'header_only_library',
-              'header_only_library_with_vcpkg',
-              'library',
-              'library_with_vcpkg',
-            ];
-            const columns = [
-              ['windows-latest', 'msvc' ],
-              ['windows-latest', 'clang'],
-              ['macos-latest',   'clang'],
-              ['macos-latest',   'gcc'  ],
-              ['ubuntu-latest',  'clang'],
-              ['ubuntu-latest',  'gcc'  ],
-            ];
-
-            const icon = c => ({ success: '✅', failure: '❌', cancelled: '⏹️', skipped: '⏭️' }[c] ?? '⬜');
-
-            const results = {};
-            for (const job of jobs) {
-              const m = job.name.match(/^(.+) \/ (.+) \/ (.+)$/);
-              if (m) results[`${m[1]}|${m[2]}|${m[3]}`] = job.conclusion;
-            }
-
-            const header = '| Template | ' + columns.map(([os, cc]) => `${os}<br>${cc}`).join(' | ') + ' |';
-            const sep    = '| --- | ' + columns.map(() => ':---:').join(' | ') + ' |';
-            const rows   = templates.map(t =>
-              '| `' + t + '` | ' + columns.map(([os, cc]) => icon(results[`${t}|${os}|${cc}`])).join(' | ') + ' |'
-            );
-
-            await core.summary.addRaw([header, sep, ...rows].join('\n')).write();
-
-            core.setOutput('results', JSON.stringify(results));
-
-      - name: Update badges
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && vars.GIST_ID != ''
-        uses: actions/github-script@v7
-        env:
-          GIST_ID : ${{ vars.GIST_ID }}
-          RESULTS : ${{ steps.grid.outputs.results }}
-        with:
-          github-token: ${{ secrets.GIST_TOKEN }}
-          script: |
-            const results   = JSON.parse(process.env.RESULTS);
-            const gist_id   = process.env.GIST_ID;
-            const templates = [
-              'executable',
-              'executable_with_vcpkg',
-              'header_only_library',
-              'header_only_library_with_vcpkg',
-              'library',
-              'library_with_vcpkg',
-            ];
-            const columns = [
-              ['windows-latest', 'msvc' ],
-              ['windows-latest', 'clang'],
-              ['macos-latest',   'clang'],
-              ['macos-latest',   'gcc'  ],
-              ['ubuntu-latest',  'clang'],
-              ['ubuntu-latest',  'gcc'  ],
-            ];
-            const slug = (os, cc) => `${os.replace('-latest', '')}_${cc}`;
-
-            const files = {};
-            for (const t of templates) {
-              for (const [os, cc] of columns) {
-                const conclusion = results[`${t}|${os}|${cc}`];
-                const passing    = conclusion === 'success';
-                const excluded   = conclusion === undefined;
-                files[`${t}_${slug(os, cc)}.json`] = {
-                  content: JSON.stringify({
-                    schemaVersion: 1,
-                    label        : '',
-                    message      : excluded ? 'n/a'     : (passing ? 'passing' : 'failing'),
-                    color        : excluded ? 'inactive': (passing ? 'brightgreen' : 'red'),
-                  }),
-                };
-              }
-            }
-
-            await github.rest.gists.update({ gist_id, files });
+      - name : Package
+        run  : cmake --workflow --preset package
