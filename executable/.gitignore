@@ -1,7 +1,9 @@
-.vs/
-.vscode/
 .idea/
-xcuserdata/
-CMakeLists.txt.user
-*build/*
+.qtc_clangd/
+.qtcreator/
+.vs*/
+build/
+cmake-build-*/
 CMakeUserPresets.json
+*.user*
+*.xcodeproj/
