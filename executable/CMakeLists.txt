@@ -43,5 +43,5 @@ endif ()
 install(TARGETS ${PROJECT_NAME})
 
 ##########################################   Packaging    ##########################################
-set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
+get_cpack_source_ignore_files()
 include(CPack)
