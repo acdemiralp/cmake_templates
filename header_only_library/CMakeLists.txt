@@ -10,9 +10,9 @@ add_library               (${PROJECT_NAME} INTERFACE)
 target_compile_features   (${PROJECT_NAME} INTERFACE cxx_std_23)
 
 ##########################################    Sources     ##########################################
-file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS LIST_DIRECTORIES false
+file(GLOB_RECURSE PROJECT_CMAKE_UTILS CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/*")
-file(GLOB_RECURSE PROJECT_INCLUDES    CONFIGURE_DEPENDS LIST_DIRECTORIES false
+file(GLOB_RECURSE PROJECT_INCLUDES    CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
 file(GLOB         PROJECT_MISC        CONFIGURE_DEPENDS LIST_DIRECTORIES false
   "${CMAKE_CURRENT_SOURCE_DIR}/*")
@@ -55,7 +55,7 @@ if   (BUILD_TESTING)
     include      (doctest)
   endif()
 
-  file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS LIST_DIRECTORIES false
+  file(GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*")
 
   foreach(TEST_PATH IN LISTS PROJECT_TESTS)
@@ -63,7 +63,6 @@ if   (BUILD_TESTING)
     cmake_path            (GET TEST_PATH PARENT_PATH TEST_PARENT_PATH)
     cmake_path            (
       RELATIVE_PATH   TEST_PARENT_PATH
-      BASE_DIRECTORY  "${CMAKE_CURRENT_SOURCE_DIR}"
       OUTPUT_VARIABLE TEST_PARENT_RELATIVE_PATH)
 
     add_executable        (${TEST_NAME} ${TEST_PATH})
@@ -100,8 +99,7 @@ configure_package_config_file(
   INSTALL_DESTINATION  "${PROJECT_CONFIG_INSTALL_DIR}")
 write_basic_package_version_file(
   "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
-  VERSION              ${PROJECT_VERSION}
-  COMPATIBILITY        SameMajorVersion)
+  COMPATIBILITY SameMajorVersion)
 install(FILES
   "${PROJECT_PACKAGE_FILE_PREFIX}Config.cmake"
   "${PROJECT_PACKAGE_FILE_PREFIX}ConfigVersion.cmake"
