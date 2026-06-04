@@ -43,5 +43,10 @@ endif ()
 install(TARGETS ${PROJECT_NAME})
 
 ##########################################   Packaging    ##########################################
-get_cpack_source_ignore_files()
+make_cpack_source_ignore_files_from_gitignore(
+  GITIGNORE_PATH  "${CMAKE_CURRENT_SOURCE_DIR}/.gitignore"
+  OUTPUT_VARIABLE PROJECT_SOURCE_IGNORE_FILES)
+set(CPACK_SOURCE_IGNORE_FILES
+  "^/\\.git(/.*)?$"
+  ${PROJECT_SOURCE_IGNORE_FILES})
 include(CPack)
