@@ -8,11 +8,11 @@ Create a new [executable|header-only library|library] [with vcpkg] called [proje
 ```
 Alternatively:
 - Copy the desired template directory and rename it to your project name.
-- Rename the `include/PROJECT_NAME_HERE` directory to your project name.
-- Replace the `PROJECT_NAME_HERE` in the `CMakeLists.txt` with your project name.
+- Rename the include directory under `include/` to your project name.
+- Replace the project name in the `CMakeLists.txt` with your project name.
 - Optional: Add your dependencies to the `CMakeLists.txt`.
 - For templates with vcpkg:
-  - Replace the `project-name-here` in the `vcpkg.json` with your project name.
+  - Replace the name in the `vcpkg.json` with your project name.
   - Optional: Add your dependencies to the `vcpkg.json`.
   - Run `bootstrap.[bat|sh]`.
 
