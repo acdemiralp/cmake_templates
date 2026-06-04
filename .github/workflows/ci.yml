@@ -81,9 +81,7 @@ jobs:
       - name : Bootstrap VCPKG (Unix)
         if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os != 'windows-latest'
         shell: bash
-        run  : |
-          chmod +x ./bootstrap.sh
-          ./bootstrap.sh
+        run  : bash bootstrap.sh
 
       - name : Test
         if   : ${{ !startsWith(matrix.template, 'executable') }}
