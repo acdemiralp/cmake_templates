@@ -41,7 +41,9 @@ function     (make_warnings_target)
   add_library           ("${ARG_TARGET_NAME}" ALIAS "${INTERNAL_TARGET_NAME}")
 endfunction  ()
 
-function     (get_cpm)  cmake_parse_arguments (PARSE_ARGV 0 "ARG" "" "DESTINATION;VERSION;HASH" "")  if   (NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "")
+function     (get_cpm)
+  cmake_parse_arguments (PARSE_ARGV 0 "ARG" "" "DESTINATION;VERSION;HASH" "")
+  if   (NOT "${ARG_UNPARSED_ARGUMENTS}" STREQUAL "")
     message(FATAL_ERROR "The ${CMAKE_CURRENT_FUNCTION} was passed unexpected arguments: ${ARG_UNPARSED_ARGUMENTS}")
   endif()
   if   (NOT DEFINED "ARG_DESTINATION" OR "${ARG_DESTINATION}" STREQUAL "")
@@ -62,18 +64,4 @@ function     (get_cpm)  cmake_parse_arguments (PARSE_ARGV 0 "ARG" "" "DESTINATIO
       "${CPM_FILE}" EXPECTED_HASH "SHA256=${ARG_HASH}")
   endif()
   include("${CPM_FILE}")
-endfunction  ()
-
-function     (get_cpack_source_ignore_files)
-  find_package(Git QUIET)
-  if   (NOT GIT_EXECUTABLE)
-    return()
-  endif()
-  execute_process(
-    COMMAND           "${GIT_EXECUTABLE}" ls-files --ignored --exclude-standard --others --directory
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE   IGNORED
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  string(REPLACE "\n" ";" IGNORED "${IGNORED}")
-  set   (CPACK_SOURCE_IGNORE_FILES ${IGNORED} PARENT_SCOPE)
 endfunction  ()
