@@ -1,4 +1,7 @@
-*.vs/*
-*.vscode/*
+.vs/
+.vscode/
+.idea/
+xcuserdata/
+CMakeLists.txt.user
 *build/*
 CMakeUserPresets.json
