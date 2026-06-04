@@ -120,6 +120,10 @@ install(
   DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}"
   FILE                 "${PROJECT_NAME}Targets.cmake"
   NAMESPACE            "${PROJECT_NAME}::")
+export(
+  EXPORT               ${PROJECT_NAME}-targets
+  FILE                 "${PROJECT_PACKAGE_FILE_PREFIX}Targets.cmake"
+  NAMESPACE            "${PROJECT_NAME}::")
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake.in"
