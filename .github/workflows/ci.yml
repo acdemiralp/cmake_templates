@@ -1,21 +1,22 @@
 name: CI
-
 on:
+  pull_request:
+    branches:
+      - main
+      - develop
   push:
     branches:
       - main
       - develop
-  pull_request:
-
 jobs:
   build:
-    name: ${{ matrix.template }} / ${{ matrix.target.os }} / ${{ matrix.target.compiler }}
-    runs-on: ${{ matrix.target.os }}
+    name: ${{matrix.template}} / ${{matrix.target.os}} / ${{matrix.target.compiler}}
+    runs-on: ${{matrix.target.os}}
     permissions:
       contents: read
     defaults:
       run:
-        working-directory: ${{ matrix.template }}
+        working-directory: ${{matrix.template}}
     strategy:
       fail-fast: false
       matrix:
@@ -27,12 +28,12 @@ jobs:
           - library
           - library_with_vcpkg
         target:
-          - { os: windows-latest, compiler: clang }
-          - { os: windows-latest, compiler: msvc  }
-          - { os: macos-latest  , compiler: clang }
-          - { os: macos-latest  , compiler: gcc   }
-          - { os: ubuntu-latest , compiler: clang }
-          - { os: ubuntu-latest , compiler: gcc   }
+          - {os: windows-latest, compiler: clang}
+          - {os: windows-latest, compiler: msvc }
+          - {os: macos-latest  , compiler: clang}
+          - {os: macos-latest  , compiler: gcc  }
+          - {os: ubuntu-latest , compiler: clang}
+          - {os: ubuntu-latest , compiler: gcc  }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,7 +49,7 @@ jobs:
         if   : matrix.target.compiler != 'msvc'
         shell: bash
         run  : |
-          case "${{ matrix.target.os }}/${{ matrix.target.compiler }}" in
+          case "${{matrix.target.os}}/${{matrix.target.compiler}}" in
             windows-latest/clang)
               echo "CC=clang-cl"  >> "$GITHUB_ENV"
               echo "CXX=clang-cl" >> "$GITHUB_ENV"
@@ -84,7 +85,7 @@ jobs:
         run  : bash bootstrap.sh
 
       - name : Test
-        if   : ${{ !startsWith(matrix.template, 'executable') }}
+        if   : ${{!startsWith(matrix.template, 'executable')}}
         run  : cmake --workflow --preset test
 
       - name : Package
