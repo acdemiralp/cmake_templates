@@ -1,0 +1,50 @@
+{
+  "version"             : 9,
+  "cmakeMinimumRequired": {"major": 3, "minor": 31, "patch": 0},
+  "configurePresets"    :
+  [
+    {
+      "name"            : "ninja-multi",
+      "generator"       : "Ninja Multi-Config",
+      "binaryDir"       : "${sourceDir}/build/${presetName}",
+      "cacheVariables"  :
+      {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets"        :
+  [
+    {"name": "debug"         , "configurePreset": "ninja-multi", "configuration" : "Debug"         },
+    {"name": "release"       , "configurePreset": "ninja-multi", "configuration" : "Release"       },
+    {"name": "relwithdebinfo", "configurePreset": "ninja-multi", "configuration" : "RelWithDebInfo"}
+  ],
+  "packagePresets"      :
+  [
+    {
+      "name"            : "binary"     ,
+      "configurePreset" : "ninja-multi",
+      "configurations"  : ["Release"]  ,
+      "generators"      : ["ZIP"]
+    },
+    {
+      "name"            : "source"     ,
+      "configurePreset" : "ninja-multi",
+      "configFile"      : "${sourceDir}/build/ninja-multi/CPackSourceConfig.cmake",
+      "generators"      : ["ZIP"]
+    }
+  ],
+  "workflowPresets"     :
+  [
+    {
+      "name"            : "package",
+      "steps"           :
+      [
+        {"type": "configure" , "name": "ninja-multi"},
+        {"type": "build"     , "name": "release"    },
+        {"type": "package"   , "name": "binary"     },
+        {"type": "package"   , "name": "source"     }
+      ]
+    }
+  ]
+}
