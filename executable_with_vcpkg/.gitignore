@@ -1,6 +1,5 @@
 .idea/
-.qtc_clangd/
-.qtcreator/
+.qt*/
 .vs*/
 build/
 cmake-build-*/
