@@ -51,7 +51,7 @@ if   (BUILD_TESTING)
       VERSION           2.5.2
       OPTIONS           "DOCTEST_WITH_TESTS OFF")
     include      (${DOCTEST_CMAKE_HELPER})
-    set_property   (TARGET doctest_with_main PROPERTY FOLDER "tests")
+    set_property (TARGET doctest_with_main PROPERTY FOLDER "tests")
   else ()
     find_package (doctest CONFIG REQUIRED)
     include      (doctest)
