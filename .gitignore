@@ -1,7 +1,6 @@
 /.idea/
 /.qt*/
 /.vs*/
-/.vscode/
 /build/
 /out/
 /cmake-build-*/

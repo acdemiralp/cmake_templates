@@ -8,9 +8,10 @@ Create a new [executable|header-only library|library] [with vcpkg] called [proje
 ```
 Alternatively:
 - Copy the desired template directory and rename it to your project name.
-- Rename the include directory under `include/` to your project name.
 - Replace the project name in the `CMakeLists.txt` with your project name.
 - Optional: Add your dependencies to the `CMakeLists.txt`.
+- Rename the include directory under `include/` to your project name.
+- For libraries, update `source/library.cpp` to use your renamed export header and macro.
 - For templates with vcpkg:
   - Replace the name in the `vcpkg.json` with your project name.
   - Optional: Add your dependencies to the `vcpkg.json`.
