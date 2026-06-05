@@ -1,5 +1,5 @@
 {
-  "version"             : 10,
+  "version"             : 9,
   "cmakeMinimumRequired": {"major": 3, "minor": 31, "patch": 0},
   "configurePresets"    :
   [
@@ -17,9 +17,9 @@
   ],
   "buildPresets"        :
   [
-    {"name": "debug"         , "configurePreset": "ninja-multi", "configuration" : "Debug"         },
-    {"name": "release"       , "configurePreset": "ninja-multi", "configuration" : "Release"       },
-    {"name": "relwithdebinfo", "configurePreset": "ninja-multi", "configuration" : "RelWithDebInfo"}
+    {"name": "debug"         , "configurePreset": "ninja-multi", "configuration": "Debug"         },
+    {"name": "release"       , "configurePreset": "ninja-multi", "configuration": "Release"       },
+    {"name": "relwithdebinfo", "configurePreset": "ninja-multi", "configuration": "RelWithDebInfo"}
   ],
   "packagePresets"      :
   [

@@ -1,2 +1,9 @@
-*build/*
-CMakeUserPresets.json
+/.idea/
+/.qt*/
+/.vs*/
+/build/
+/out/
+/cmake-build-*/
+/CMakeUserPresets.json
+/*.user*
+/*.xcodeproj/
