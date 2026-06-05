@@ -1,6 +1,6 @@
 ##########################################    Project     ##########################################
 cmake_minimum_required(VERSION 3.31)
-project               (PROJECT_NAME_HERE VERSION 0.0.0 LANGUAGES CXX)
+project               (executable VERSION 0.0.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include               (extensions)
 
@@ -43,5 +43,6 @@ endif ()
 install(TARGETS ${PROJECT_NAME})
 
 ##########################################   Packaging    ##########################################
-set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
+set    (CPACK_SOURCE_IGNORE_FILES
+  ".git/;/.idea/;/.qt.*/;/.vs.*/;/build/;/out/;/cmake-build-.*/;CMakeUserPresets.json")
 include(CPack)

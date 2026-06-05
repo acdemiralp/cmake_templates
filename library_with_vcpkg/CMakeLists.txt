@@ -1,6 +1,6 @@
 ##########################################    Project     ##########################################
 cmake_minimum_required (VERSION 3.31)
-project                (PROJECT_NAME_HERE VERSION 0.0.0 LANGUAGES CXX)
+project                (library_with_vcpkg VERSION 0.0.0 LANGUAGES CXX)
 list                   (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include                (extensions)
 include                (GNUInstallDirs)
@@ -59,16 +59,17 @@ if   (PROJECT_IS_TOP_LEVEL)
   include(CTest)
 endif()
 
-if   (BUILD_TESTING)
+if   (BUILD_TESTING AND PROJECT_IS_TOP_LEVEL)
   find_package(doctest CONFIG REQUIRED)
   include     (doctest)
 
   file      (GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tests/*")
   foreach   (TEST_PATH IN LISTS PROJECT_TESTS)
-    cmake_path(GET TEST_PATH STEM        TEST_NAME       )
+    cmake_path(GET TEST_PATH STEM        TEST_STEM       )
     cmake_path(GET TEST_PATH PARENT_PATH TEST_PARENT_PATH)
     cmake_path(RELATIVE_PATH TEST_PARENT_PATH OUTPUT_VARIABLE TEST_PARENT_RELATIVE_PATH)
 
+    string                    (MAKE_C_IDENTIFIER "${PROJECT_NAME}_${TEST_PARENT_RELATIVE_PATH}_${TEST_STEM}" TEST_NAME)
     add_executable            (${TEST_NAME} ${TEST_PATH})
     set_target_properties     (${TEST_NAME} PROPERTIES
       CXX_STANDARD          23
@@ -77,7 +78,7 @@ if   (BUILD_TESTING)
     target_compile_definitions(${TEST_NAME} PRIVATE DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
     target_link_libraries     (${TEST_NAME} PRIVATE
       ${PROJECT_NAME} ${PROJECT_NAME}::warnings doctest::doctest)
-    doctest_discover_tests    (${TEST_NAME})
+    doctest_discover_tests    (${TEST_NAME} TEST_PREFIX "${PROJECT_NAME}.")
     set_property              (TARGET ${TEST_NAME} PROPERTY FOLDER "${TEST_PARENT_RELATIVE_PATH}")
   endforeach()
 endif()
@@ -114,5 +115,6 @@ install(FILES
   DESTINATION          "${PROJECT_CONFIG_INSTALL_DIR}")
 
 ##########################################   Packaging    ##########################################
-set    (CPACK_SOURCE_IGNORE_FILES ".git/;/build/;CMakeUserPresets.json")
+set    (CPACK_SOURCE_IGNORE_FILES
+  ".git/;/.idea/;/.qt.*/;/.vs.*/;/build/;/out/;/cmake-build-.*/;CMakeUserPresets.json")
 include(CPack)

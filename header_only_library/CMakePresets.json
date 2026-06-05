@@ -24,12 +24,12 @@
   ],
   "buildPresets"        :
   [
-    {"name": "debug"               , "configurePreset": "ninja-multi"      , "configuration" : "Debug"         },
-    {"name": "release"             , "configurePreset": "ninja-multi"      , "configuration" : "Release"       },
-    {"name": "relwithdebinfo"      , "configurePreset": "ninja-multi"      , "configuration" : "RelWithDebInfo"},
-    {"name": "debug-tests"         , "configurePreset": "ninja-multi-tests", "configuration" : "Debug"         },
-    {"name": "release-tests"       , "configurePreset": "ninja-multi-tests", "configuration" : "Release"       },
-    {"name": "relwithdebinfo-tests", "configurePreset": "ninja-multi-tests", "configuration" : "RelWithDebInfo"}
+    {"name": "debug"               , "configurePreset": "ninja-multi"      , "configuration": "Debug"         },
+    {"name": "release"             , "configurePreset": "ninja-multi"      , "configuration": "Release"       },
+    {"name": "relwithdebinfo"      , "configurePreset": "ninja-multi"      , "configuration": "RelWithDebInfo"},
+    {"name": "debug-tests"         , "configurePreset": "ninja-multi-tests", "configuration": "Debug"         },
+    {"name": "release-tests"       , "configurePreset": "ninja-multi-tests", "configuration": "Release"       },
+    {"name": "relwithdebinfo-tests", "configurePreset": "ninja-multi-tests", "configuration": "RelWithDebInfo"}
   ],
   "testPresets"         :
   [
@@ -46,9 +46,9 @@
         "outputOnFailure": true
       }
     },
-    {"name": "debug"               , "inherits"       : "test-base"        , "configuration" : "Debug"         },
-    {"name": "release"             , "inherits"       : "test-base"        , "configuration" : "Release"       },
-    {"name": "relwithdebinfo"      , "inherits"       : "test-base"        , "configuration" : "RelWithDebInfo"}
+    {"name": "debug"               , "inherits"       : "test-base"        , "configuration": "Debug"         },
+    {"name": "release"             , "inherits"       : "test-base"        , "configuration": "Release"       },
+    {"name": "relwithdebinfo"      , "inherits"       : "test-base"        , "configuration": "RelWithDebInfo"}
   ],
   "packagePresets"      :
   [
