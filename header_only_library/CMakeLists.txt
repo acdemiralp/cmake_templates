@@ -37,7 +37,10 @@ endif ()
 
 ##########################################    Testing     ##########################################
 if   (PROJECT_IS_TOP_LEVEL)
-  include(CTest)
+  option(BUILD_TESTING "Build testing." ON)
+  if    (BUILD_TESTING)
+    enable_testing()
+  endif ()
 endif()
 
 if   (BUILD_TESTING)
@@ -52,6 +55,7 @@ if   (BUILD_TESTING)
     find_package (doctest CONFIG REQUIRED)
     include      (doctest)
   endif()
+  set_property   (TARGET doctest_with_main PROPERTY FOLDER "tests")
 
   file      (GLOB_RECURSE PROJECT_TESTS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/tests/*")
   foreach   (TEST_PATH IN LISTS PROJECT_TESTS)
@@ -59,7 +63,8 @@ if   (BUILD_TESTING)
     cmake_path(GET TEST_PATH PARENT_PATH TEST_PARENT_PATH)
     cmake_path(RELATIVE_PATH TEST_PARENT_PATH OUTPUT_VARIABLE TEST_PARENT_RELATIVE_PATH)
 
-    string                    (MAKE_C_IDENTIFIER "${PROJECT_NAME}_${TEST_PARENT_RELATIVE_PATH}_${TEST_STEM}" TEST_NAME)
+    string                    (MAKE_C_IDENTIFIER
+      "${PROJECT_NAME}_${TEST_PARENT_RELATIVE_PATH}_${TEST_STEM}" TEST_NAME)
     add_executable            (${TEST_NAME} ${TEST_PATH})
     set_target_properties     (${TEST_NAME} PROPERTIES
       CXX_STANDARD          23
