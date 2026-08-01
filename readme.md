@@ -15,7 +15,6 @@ Alternatively:
 - For templates with vcpkg:
   - Replace the name in the `vcpkg.json` with your project name.
   - Optional: Add your dependencies to the `vcpkg.json`.
-  - Run `bootstrap.[bat|sh]`.
 
 ## Usage
 - Configure : `cmake --preset ninja-multi`.

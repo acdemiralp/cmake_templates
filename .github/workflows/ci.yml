@@ -59,10 +59,8 @@ jobs:
               echo "CXX=clang++"  >> "$GITHUB_ENV"
               ;;
             macos-latest/gcc)
-              GCC_PREFIX=$(brew --prefix gcc)
-              GCC_VER=$(ls "${GCC_PREFIX}/bin/gcc-"* | grep -oE '[0-9]+$' | sort -n | tail -1)
-              echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VER}"  >> "$GITHUB_ENV"
-              echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VER}" >> "$GITHUB_ENV"
+              echo "CC=gcc-15"    >> "$GITHUB_ENV"
+              echo "CXX=g++-15"   >> "$GITHUB_ENV"
               ;;
             ubuntu-latest/clang)
               echo "CC=clang"     >> "$GITHUB_ENV"
@@ -73,16 +71,6 @@ jobs:
               echo "CXX=g++"      >> "$GITHUB_ENV"
               ;;
           esac
-
-      - name : Bootstrap VCPKG (Windows)
-        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os == 'windows-latest'
-        shell: cmd
-        run  : call bootstrap.bat
-
-      - name : Bootstrap VCPKG (Unix)
-        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os != 'windows-latest'
-        shell: bash
-        run  : bash bootstrap.sh
 
       - name : Test
         if   : ${{!startsWith(matrix.template, 'executable')}}
