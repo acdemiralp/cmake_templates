@@ -1,8 +1,9 @@
 ##########################################    Project     ##########################################
 cmake_minimum_required (VERSION 3.31)
-project                (header_only_library_with_vcpkg VERSION 0.0.0 LANGUAGES CXX)
 list                   (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include                (extensions)
+prepare_vcpkg          ()
+project                (header_only_library_with_vcpkg VERSION 0.0.0 LANGUAGES CXX)
 include                (GNUInstallDirs)
 
 ##########################################     Target     ##########################################
