@@ -59,10 +59,8 @@ jobs:
               echo "CXX=clang++"  >> "$GITHUB_ENV"
               ;;
             macos-latest/gcc)
-              GCC_PREFIX=$(brew --prefix gcc)
-              GCC_VER=$(ls -1 "${GCC_PREFIX}/bin" | grep -E '^gcc-[0-9]+$' | sort -V | tail -1 | grep -oE '[0-9]+$')
-              echo "CC=${GCC_PREFIX}/bin/gcc-${GCC_VER}"  >> "$GITHUB_ENV"
-              echo "CXX=${GCC_PREFIX}/bin/g++-${GCC_VER}" >> "$GITHUB_ENV"
+              echo "CC=gcc-15"    >> "$GITHUB_ENV"
+              echo "CXX=g++-15"   >> "$GITHUB_ENV"
               ;;
             ubuntu-latest/clang)
               echo "CC=clang"     >> "$GITHUB_ENV"
