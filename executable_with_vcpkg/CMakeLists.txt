@@ -1,8 +1,9 @@
 ##########################################    Project     ##########################################
 cmake_minimum_required(VERSION 3.31)
-project               (executable_with_vcpkg VERSION 0.0.0 LANGUAGES CXX)
 list                  (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include               (extensions)
+prepare_vcpkg         ()
+project               (executable_with_vcpkg VERSION 0.0.0 LANGUAGES CXX)
 
 ##########################################     Target     ##########################################
 add_executable        (${PROJECT_NAME})

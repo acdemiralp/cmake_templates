@@ -74,16 +74,6 @@ jobs:
               ;;
           esac
 
-      - name : Bootstrap VCPKG (Windows)
-        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os == 'windows-latest'
-        shell: cmd
-        run  : call bootstrap.bat
-
-      - name : Bootstrap VCPKG (Unix)
-        if   : contains(matrix.template, 'with_vcpkg') && matrix.target.os != 'windows-latest'
-        shell: bash
-        run  : bash bootstrap.sh
-
       - name : Test
         if   : ${{!startsWith(matrix.template, 'executable')}}
         run  : cmake --workflow --preset test
